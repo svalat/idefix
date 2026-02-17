@@ -115,6 +115,29 @@ class idfxTest:
     # store the full path of problem directory
     self.problemDir=os.path.abspath("./")
 
+  def create_ccache_wrappers(self,familly_name: str, compilers: list, add_to_path: bool = True) -> str:
+    # get path of ccache
+    ccache_bin = shutil.which("ccache")
+    if ccache_bin is None:
+      raise Exception("ccache command not found in the environnement !")
+
+    # create a dir to store the wrappers
+    dir = os.makedirs(os.path.join("./ccache-wrappers", familly_name), exist_ok=False)
+
+    # create the symlinks inside
+    for compiler in compilers:
+      comp_bin = shutil.witch(compiler)
+      if comp_bin is None:
+        raise Exception(f"Fail to find path of command '{compiler}' to create the ccache symlink !")
+      os.symlink(ccache_bin, os.path.join(dir, compiler))
+
+    # add to path if requested
+    if add_to_path:
+      os.environ["PATH"] = f"{dir}:{os.environ["PATH"]}"
+
+    # ok
+    return dir
+
   def configure(self,definitionFile=""):
     comm=["cmake"]
     # add source directory
@@ -182,7 +205,10 @@ class idfxTest:
 
     # export ccache env
     if self.ccache:
-      comm.append("-DCMAKE_CXX_COMPILER_LAUNCHER=ccache")
+      if self.cuda:
+        self.create_ccache_wrappers("nvcc", ["gcc", "g++", "cc", "cxx" "nvcc"])
+      else:
+        comm.append("-DCMAKE_CXX_COMPILER_LAUNCHER=ccache")
 
     try:
         # clean before configuring again
