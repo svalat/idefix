@@ -1,5 +1,5 @@
 {
-  "variants": {
+  "default": {
     "ini": "idefix.ini",
     "dumpname": "dump.0001.dmp",
     "vectPot": false,
