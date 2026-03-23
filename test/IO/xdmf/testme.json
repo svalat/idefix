@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "ini": "idefix.ini",
+    "dumpname": "dump.0001.dmp",
+    "vectPot": false,
+    "single": false,
+    "mpi": false,
+    "nonRegressionTest": false,
+    "standardTest": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "variants": [
+    {
+      "ini": "idefix.ini",
+      "dumpname": "dump.0001.dmp",
+      "dec": [2, 2, 2],
+      "tolerance": 1e-13,
+      "nonRegressionTest": false,
+      "standardTest": false,
+      "vectPot": [false, true],
+      "reconstruction": 2,
+      "mpi": [false, true]
+    }, {
+      "ini": "idefix.ini",
+      "dumpname": "dump.0001.dmp",
+      "dec": [2, 2, 2],
+      "tolerance": 1e-13,
+      "nonRegressionTest": false,
+      "standardTest": false,
+      "vectPot": false,
+      "reconstruction": 2,
+      "single": true,
+      "mpi": [false, true]
+    }
+  ]
+}

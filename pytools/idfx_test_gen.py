@@ -73,14 +73,15 @@ class IdefixDirTestGenerator:
       config['testname'] = self.currentTestName
       # gen name
       nameParts = [self.currentTestName]
-      for name in nameList:
-        if isinstance(config[name], bool):
-          if config[name]:
-            nameParts.append(name)
-        elif isinstance(config[name], str):
-          nameParts.append(str(config[name]))
-        else:
-          nameParts.append(f"{name}-{config[name]}")
+      if nameList != [""]:
+        for name in nameList:
+          if isinstance(config[name], bool):
+            if config[name]:
+              nameParts.append(name)
+          elif isinstance(config[name], str):
+            nameParts.append(str(config[name]))
+          else:
+            nameParts.append(f"{name}-{config[name]}")
       confName = "-".join(nameParts)
 
       # apply when clause
@@ -192,10 +193,11 @@ class IdefixDirTestGenerator:
     result = [core]
 
     # loop
-    for key in loopOrder:
-      value = config[key]
-      assert isinstance(value, list), f"This parameter is marked as a list but is not a list : {key}={value} !"
-      result = self._genNextLevelCombinations(result, key, value)
+    if loopOrder != [""]:
+      for key in loopOrder:
+        value = config[key]
+        assert isinstance(value, list), f"This parameter is marked as a list but is not a list : {key}={value} !"
+        result = self._genNextLevelCombinations(result, key, value)
 
     # ok
     return result
