@@ -126,6 +126,10 @@ class idfxTest:
                     help="Select the test in the given subdir not to run all.",
                     type=str)
 
+    parser.add_argument("-buildonly",
+                    action="store_true",
+                    help="Perform only the build stage and skip run.")
+
     args, unknown=parser.parse_known_args()
 
     # transform all arguments from args into attributes of this instance
@@ -334,6 +338,10 @@ class idfxTest:
         raise e
 
   def run(self, inputFile="", np=2, nowrite=False, restart=-1):
+      # skip if build only mode
+      if self.buildonly:
+        return
+
       # log
       self.addLog({"call": "run", "args":{
         'np': np,
@@ -435,6 +443,10 @@ class idfxTest:
     self.perf=float(line.group(1))
 
   def checkOnly(self, filename, tolerance=0):
+    # skip if build only mode
+    if self.buildonly:
+      return
+
     # log
     self.addLog({"call": "checkOnly", "args":{
       'filename': filename,
@@ -455,6 +467,10 @@ class idfxTest:
     self.nonRegressionTest(filename, tolerance)
 
   def standardTest(self):
+    # skip if build only mode
+    if self.buildonly:
+      return
+
     # log and in fake mode do not execute.
     self.addLog({"call": "standardTest", "args":{}})
     if self.fake:
@@ -483,6 +499,10 @@ class idfxTest:
     sys.stdout.flush()
 
   def nonRegressionTest(self, filename,tolerance=0):
+    # skip if build only mode
+    if self.buildonly:
+      return
+
     # log and in fake mode do not execute.
     self.addLog({"call": "nonRegressionTest", "args":{
       "filename": filename,
@@ -513,6 +533,10 @@ class idfxTest:
     sys.stdout.flush()
 
   def compareDump(self, file1, file2,tolerance=0):
+    # skip if build only mode
+    if self.buildonly:
+      return
+
     self.addLog({"call": "compareDump", "args":{
       "file1": file1,
       "file2": file2,
@@ -535,6 +559,10 @@ class idfxTest:
 
 
   def makeReference(self,filename):
+    # skip if build only mode
+    if self.buildonly:
+      return
+
     # log and in fake mode do not execute.
     self.addLog({"call": "compareDump", "args":{
       "filename": filename,

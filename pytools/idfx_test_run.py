@@ -235,8 +235,11 @@ class IdexPytestRunner:
         assert file_mtime[file] == os.path.getmtime(file), f"Dump file {file} was overwritten on restart"
 
   def main(self, all: bool = False):
+    # inject for lower stage
     if all:
       sys.argv.append("-all")
+
+    # create idfxTest
     idefixTest = tst.idfxTest(self.parentScritFile, name="main")
     os.environ["IDEFIX_TEST_FILTER_SUBDIR"] = idefixTest.filterSubdir
 
@@ -244,8 +247,3 @@ class IdexPytestRunner:
       pytest.main(['-v', '--no-header', '--junit-xml=idefix-tests.junit.xml', '--tb=short'] + idefixTest.remainingArgs + [self.parentScritFile])
     else:
       assert False, "Not yet supported !"
-    #elif self.check:
-    #  idefixTest.checkOnly(filename=dumpname, tolerance=tolerance)
-    #else:
-    #  for ini in ini_list:
-    #      self.runNonRegression(dumpname, ini, {}, tolerance=tolerance)
