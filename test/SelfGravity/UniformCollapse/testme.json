@@ -1,9 +1,8 @@
 {
-    "namings": "ini",
-    "variants": [
+    "defualt": [
         {
             "dumpname": "dump.0001.dmp",
-            "ini": ["idefix.ini"],
+            "ini": "idefix.ini",
             "noplot": true,
             "single": false,
             "reconstruction": 2,
