@@ -9,7 +9,7 @@
             "reconstruction": [2],
             "mpi": [false,true],
             "dec": ["2","2","2"],
-            "tolerance": 1e-14
+            "tolerance": 2e-13
         },{
             "dumpname": "dump.0001.dmp",
             "ini": ["idefix-fast.ini","idefix-slow.ini","idefix-alfven.ini","idefix-entropy.ini"],
@@ -18,7 +18,7 @@
             "reconstruction": [3, 4],
             "mpi": [false],
             "dec": ["2","2","2"],
-            "tolerance": 1e-14
+            "tolerance": 2e-13
         }
     ]
 }

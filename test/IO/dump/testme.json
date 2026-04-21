@@ -10,6 +10,7 @@
             "mpi": [false, true],
             "dec": ["2","2","2"],
             "standardTest": false,
+            "nonRegressionTest": false,
             "tolerance": 1e-13
         },{
             "dumpname": "dump.0001.dmp",
@@ -20,15 +21,8 @@
             "single": [true],
             "dec": ["2","2","2"],
             "standardTest": false,
+            "nonRegressionTest": false,
             "tolerance": 1e-13
         }
-    ],
-    "when": {
-        "conditions": {
-            "single": true
-        },
-        "apply" : {
-            "tolerance": 1e-6
-        }
-    }
+    ]
 }

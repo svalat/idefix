@@ -8,7 +8,7 @@
 import copy
 import pytest
 
-DO_NOT_LOOP_ON = ['restart_no_overwrite', "dec", "multirun"]
+DO_NOT_LOOP_ON = ['restart_no_overwrite', "dec", "multirun", "check_file_produced"]
 
 class IdefixDirTestGenerator:
   '''

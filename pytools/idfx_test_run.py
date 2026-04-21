@@ -123,6 +123,7 @@ class IdexPytestRunner:
     standardTest = config.get("standardTest", True)
     nonRegressionTest = config.get("nonRegressionTest", True)
     nonRegressionTestIni = config.get("nonRegressionTestIni", None)
+    check_file_produced = config.get("check_file_produced", [])
     problemDir = os.path.dirname(testfile)
 
     # cleanup some keyword not handled at the
@@ -147,6 +148,11 @@ class IdexPytestRunner:
     # run
     with moveInDir(problemDir):
       self._runNonRegression(dumpname, config['ini'], config, tolerance=tolerance, definitionFile=definitionFile, standardTest=standardTest, nonReg=nonRegressionTest, nonRegIni=nonRegressionTestIni)
+
+    # check produced
+    for file in check_file_produced:
+      if not os.path.exists(file):
+        raise Exception(f"Don't find expected file to be produced by the run : {file} !")
 
   def _runNonRegression(self, dumpname, ini, config_override, tolerance=0, definitionFile="", nonReg=True, nonRegIni=None, standardTest=True, first_run_ini=None,first_run_dumpname=None,configure_and_compile=True):
     if 'multirun' in config_override:
