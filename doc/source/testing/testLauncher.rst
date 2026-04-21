@@ -5,7 +5,7 @@ Test launcher and reporter
 Overview
 --------
 
-The class :doc:`idfxTest <idfxTest>` provides the basement to implement an *Idefix* integration test for validation.
+The class :doc:`idfxTest <idfxTest>` provides the toolbox to implement an *Idefix* integration test for validation.
 In order to ease launching all the tests, the user might prefer to use directly the ``./test.py`` command at the
 root of the *Idefix* sources.
 
@@ -16,7 +16,7 @@ HTML file.
 Depencencies
 ------------
 
-Before using :doc:`idfxTest <idfxTest>` you need to install some Python Depencencies (possibly in a ``virtual env``):
+Before using :doc:`idfxTest <idfxTest>` you need to install some Python depencencies (possibly in a ``virtual env``):
 
 .. code-block:: shell
 
@@ -61,7 +61,7 @@ The result of the execution will be an output like :
     ---------- generated xml file: idefix-tests.junit.xml ---------------------------------------------------------
     =============================== 8 passed, 44 deselected in 73.03s (0:01:13) ===================================
 
-When seeing an error, the output of the command will be printed at the end.
+When an error is detected, the output of the command will be printed at the end.
 
 HTML report
 -----------
@@ -137,8 +137,8 @@ to all the advanced option this command provide. Here a few examples :
 Definition of the tests
 -----------------------
 
-The script is simply searching all the files names ``testme.json`` into the ``test`` directory.
-This file describe the combination of parameters to use to produce the list of *Idefix* run to perform.
+The script looks for all the files named ``testme.json`` in the ``test`` directory and all its sub-directories.
+This file describes the combination of parameters used to produce the list of *Idefix* runs to check.
 For a single basic configuration one can use :
 
 .. code-block:: json
@@ -297,7 +297,7 @@ the order you want to see them composing the test name.
     }
 
 
-By default, the alphabetical order will be used.
+By default, the alphabetical order is used.
 
 When clauses
 ------------
