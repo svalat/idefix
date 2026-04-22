@@ -33,13 +33,13 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Sod test
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/sod -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/sod $TESTME_OPTIONS
       - name: Isothermal Sod test
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/sod-iso -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/sod-iso $TESTME_OPTIONS
       - name: Mach reflection test
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD//MachReflection -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/MachReflection $TESTME_OPTIONS
       - name: Sedov blast wave
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/SedovBlastWave -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/SedovBlastWave $TESTME_OPTIONS
 
   ParabolicHydro:
     runs-on: self-hosted
@@ -50,11 +50,11 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Viscous flow past cylinder
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/ViscousFlowPastCylinder -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/ViscousFlowPastCylinder $TESTME_OPTIONS
       - name: Viscous disk
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/ViscousDisk -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/ViscousDisk $TESTME_OPTIONS
       - name: Thermal diffusion
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/thermalDiffusion -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/thermalDiffusion $TESTME_OPTIONS
 
   ShocksMHD:
     runs-on: self-hosted
@@ -65,17 +65,17 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: MHD Sod test
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/sod -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/sod $TESTME_OPTIONS
       - name: MHD Isothermal Sod test
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/sod-iso -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/sod-iso $TESTME_OPTIONS
       - name: Orszag Tang
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/OrszagTang -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/OrszagTang $TESTME_OPTIONS
       - name: Orszag Tang 3D
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/OrszagTang3D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/OrszagTang3D $TESTME_OPTIONS
       - name: Linear wave test
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/LinearWaveTest -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/LinearWaveTest $TESTME_OPTIONS
       - name: Axis Flux tube
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/AxisFluxTube -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/AxisFluxTube $TESTME_OPTIONS
 
   ParabolicMHD:
     runs-on: self-hosted
@@ -86,15 +86,15 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Ambipolar C Shock
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/AmbipolarCshock -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/AmbipolarCshock $TESTME_OPTIONS
       - name: Ambipolar C Shock 3D
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/AmbipolarCshock3D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/AmbipolarCshock3D $TESTME_OPTIONS
       - name: Resistive Alfvén wave
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/ResistiveAlfvenWave -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/ResistiveAlfvenWave $TESTME_OPTIONS
       - name: Grid coarsening diffusion
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/Coarsening -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/Coarsening $TESTME_OPTIONS
       - name: Hall whistler waves
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/HallWhistler -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/HallWhistler $TESTME_OPTIONS
 
   Fargo:
     needs: [ShocksHydro, ParabolicHydro, ShocksMHD, ParabolicMHD]
@@ -106,9 +106,9 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Fargo + planet
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/FargoPlanet -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/FargoPlanet $TESTME_OPTIONS
       - name: Fargo MHD spherical
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/FargoMHDSpherical -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/FargoMHDSpherical $TESTME_OPTIONS
 
   ShearingBox:
     needs: [ShocksHydro, ParabolicHydro, ShocksMHD, ParabolicMHD]
@@ -120,9 +120,9 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Hydro shearing box
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/HD/ShearingBox -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/HD/ShearingBox $TESTME_OPTIONS
       - name: MHD shearing box
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/ShearingBox -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/ShearingBox $TESTME_OPTIONS
 
   SelfGravity:
     needs: [ShocksHydro, ParabolicHydro, ShocksMHD, ParabolicMHD]
@@ -134,15 +134,15 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Jeans Instability
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/SelfGravity/JeansInstability -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/SelfGravity/JeansInstability $TESTME_OPTIONS
       - name: Random sphere spherical
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/SelfGravity/RandomSphere -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/SelfGravity/RandomSphere $TESTME_OPTIONS
       - name: Random sphere cartesian
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/SelfGravity/RandomSphereCartesian -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/SelfGravity/RandomSphereCartesian $TESTME_OPTIONS
       - name: Uniform spherical collapse
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/SelfGravity/UniformCollapse -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/SelfGravity/UniformCollapse $TESTME_OPTIONS
       - name: Dusty spherical collapse
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/SelfGravity/DustyCollapse -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/SelfGravity/DustyCollapse $TESTME_OPTIONS
 
   Planet:
     needs: [ShocksHydro, ParabolicHydro, ShocksMHD, ParabolicMHD]
@@ -154,17 +154,17 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: 3 body
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Planet/Planet3Body -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Planet/Planet3Body $TESTME_OPTIONS
       - name: migration
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Planet/PlanetMigration2D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Planet/PlanetMigration2D $TESTME_OPTIONS
       - name: planet-planet
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Planet/PlanetPlanetRK42D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Planet/PlanetPlanetRK42D $TESTME_OPTIONS
       - name: spiral wake
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Planet/PlanetSpiral2D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Planet/PlanetSpiral2D $TESTME_OPTIONS
       - name: torques
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Planet/PlanetTorque3D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Planet/PlanetTorque3D $TESTME_OPTIONS
       - name: RK5
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Planet/PlanetsIsActiveRK52D -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Planet/PlanetsIsActiveRK52D $TESTME_OPTIONS
 
   Dust:
     needs: [ShocksHydro, ParabolicHydro, ShocksMHD, ParabolicMHD]
@@ -176,9 +176,9 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Energy conservation
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Dust/DustEnergy -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Dust/DustEnergy $TESTME_OPTIONS
       - name: Dusty wave
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/Dust/DustyWave -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/Dust/DustyWave $TESTME_OPTIONS
 
   Braginskii:
     needs: [ShocksHydro, ParabolicHydro, ShocksMHD, ParabolicMHD]
@@ -190,13 +190,13 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: MTI
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/MTI -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/MTI $TESTME_OPTIONS
       - name: Spherical anisotropic diffusion
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/sphBragTDiffusion -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/sphBragTDiffusion $TESTME_OPTIONS
       - name: Spherical anisotropic viscosity
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/sphBragViscosity -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/sphBragViscosity $TESTME_OPTIONS
       - name: Collisionless thermal conduction
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/MHD/clessTDiffusion -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/MHD/clessTDiffusion $TESTME_OPTIONS
 
   Examples:
     needs: [Fargo, Dust, Planet, ShearingBox, SelfGravity]
@@ -220,11 +220,11 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Lookup table
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/utils/lookupTable -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/utils/lookupTable $TESTME_OPTIONS
       - name: Dump Image
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/utils/dumpImage -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/utils/dumpImage $TESTME_OPTIONS
       - name: Column density
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/utils/columnDensity -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/utils/columnDensity $TESTME_OPTIONS
 
   IOs:
     needs: [Fargo, Dust, Planet, ShearingBox, SelfGravity]
@@ -236,13 +236,13 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Restart dumps
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/IO/dump -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/IO/dump $TESTME_OPTIONS
       - name: Pydefix
         run: |
           python3 -m venv $IDEFIX_DIR/test/IO/pydefix/env
           source $IDEFIX_DIR/test/IO/pydefix/env/bin/activate
           python3 -m pip install -r $IDEFIX_DIR/test/IO/pydefix/python_requirements.txt
-          scripts/ci/run-tests $IDEFIX_DIR/test/IO/pydefix -all $TESTME_OPTIONS
+          ./test.py -subdir $IDEFIX_DIR/test/IO/pydefix $TESTME_OPTIONS
 
       - name: xdmf
-        run: scripts/ci/run-tests $IDEFIX_DIR/test/IO/xdmf -all $TESTME_OPTIONS
+        run: ./test.py -subdir $IDEFIX_DIR/test/IO/xdmf $TESTME_OPTIONS
