@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - magnetic vector potential is now accessible from pydefix when enabled (#361)
 - use ccache in the test suite to reduce the runtime of continuous integration (#364)
 - automatically detects pybind11 path with cmake when using pydefix (#367)
+- skeleton to run the test suite with pytest (#366)
 
 
 ## [2.2.02] 2025-10-18
