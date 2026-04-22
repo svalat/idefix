@@ -8,6 +8,7 @@
     "mpi": true,
     "dec": [2, 2, 2 ],
     "standardTest": false,
+    "nonRegressionTest": false,
     "tolerance": 0
   },
   "variants": [
