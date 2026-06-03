@@ -19,14 +19,6 @@ struct Force {
     real f_ex_inner[3];
     real f_outer[3];
     real f_ex_outer[3];
-    KOKKOS_FUNCTION void operator+=(Force const volatile& f) volatile {
-        for (int i = 0; i < 3; ++i) {
-            f_inner[i] += f.f_inner[i];
-            f_ex_inner[i] += f.f_ex_inner[i];
-            f_outer[i] += f.f_outer[i];
-            f_ex_outer[i] += f.f_ex_outer[i];
-        }
-    }
 };
 struct Point {
     real x;
