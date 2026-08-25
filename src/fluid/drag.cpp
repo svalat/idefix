@@ -7,6 +7,7 @@
 #include "drag.hpp"
 #include <string>
 #include "physics.hpp"
+#include <twin-checker/CheckerApi.h>
 
 void Drag::AddDragForce(const real dt) {
   idfx::pushRegion("Drag::AddDragForce");
@@ -53,6 +54,19 @@ void Drag::AddDragForce(const real dt) {
       if(feedback) idt += gamma*VcDust(RHO,k,j,i);
       InvDt(k,j,i) += idt;
     });
+
+
+  //TWIN-CHECK
+  twin_register_site(9000, __FILE__, strlen(__FILE__));
+  //check arrays
+  Kokkos::fence();
+  auto InvDt_tmp = Kokkos::create_mirror_view(this->InvDt);
+  Kokkos::deep_copy(InvDt_tmp, this->InvDt);
+  Kokkos::fence();
+  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 9000, __LINE__);
+
+
+
   idfx::popRegion();
 }
 //

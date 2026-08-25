@@ -11,9 +11,35 @@
 #include "fluid.hpp"
 #include "dataBlock.hpp"
 #include "gravity.hpp"
+#include <twin-checker/CheckerApi.h>
 
+/*#define TWTOSTR(var) #var
+#define TWCHECK(var) \
+  do { \
+    //TWIN-CHECK \
+    twin_register_site((5555+__LINE__), __FILE__, strlen(__FILE__)); \
+    //check arrays \
+    Kokkos::fence(); \
+    auto tmp = Kokkos::create_mirror_view(var); \
+    Kokkos::deep_copy(tmp, var); \
+    Kokkos::fence(); \
+    twin_check_double_fixable_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (5555+__LINE__), __LINE__); \
+  } while(0)
+
+*/
 template<typename Phys, int dir>
 struct Fluid_CorrectFluxFunctor {
+  /*void twCheck(void) {
+    TWCHECK(Uc);
+    TWCHECK(Vc);
+    TWCHECK(Flux);
+    TWCHECK(A);
+  }
+
+  ~Fluid_CorrectFluxFunctor() {
+    this->twCheck();
+  }*/
+
   // Correct the flux to take into account non-cartesian geometries and Fargo
   //*****************************************************************
   // Functor constructor
@@ -47,6 +73,9 @@ struct Fluid_CorrectFluxFunctor {
 
     // Shearing box shear rate
     sbS = hydro->sbS;
+
+    //check
+    //this->twCheck();
   }
 
   //*****************************************************************
@@ -590,6 +619,25 @@ void Fluid<Phys>::CalcRightHandSide(real t, real dt) {
              data->beg[JDIR],data->end[JDIR],
              data->beg[IDIR],data->end[IDIR],
               calcRHS);
+
+
+  //TWIN-CHECK
+  twin_register_site(1100, __FILE__, strlen(__FILE__));
+  twin_register_site(1101, __FILE__, strlen(__FILE__));
+  twin_register_site(1102, __FILE__, strlen(__FILE__));
+  //check arrays
+  Kokkos::fence();
+  auto InvDt_tmp = Kokkos::create_mirror_view(this->InvDt);
+  auto cMax_tmp = Kokkos::create_mirror_view(this->cMax);
+  auto dMax_tmp = Kokkos::create_mirror_view(this->dMax);
+  Kokkos::deep_copy(InvDt_tmp, this->InvDt);
+  Kokkos::deep_copy(cMax_tmp, this->cMax);
+  Kokkos::deep_copy(dMax_tmp, this->dMax);
+  Kokkos::fence();
+  twin_check_double_fixable_array(cMax_tmp.data(), cMax_tmp.span(), "cMax", 4, 1101, __LINE__);
+  twin_check_double_fixable_array(dMax_tmp.data(), dMax_tmp.span(), "dMax", 4, 1102, __LINE__);
+  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 4, 1100, __LINE__);
+
 
 
   idfx::popRegion();

@@ -230,6 +230,7 @@ endif()
 target_include_directories(idefix PUBLIC
                            "${Idefix_PROBLEM_DIR_ABS}"
                            )
+target_include_directories(idefix PUBLIC /lus/scratch/CT4/cin2231/svalat/usr/twin-checker/include)
 target_include_directories(idefix PUBLIC
                            src/kokkos/core/src
                            src/dataBlock
@@ -254,6 +255,7 @@ target_include_directories(idefix PUBLIC
                            )
 
 target_link_libraries(idefix Kokkos::kokkos)
+target_link_libraries(idefix /lus/scratch/CT4/cin2231/svalat/usr/twin-checker/lib/libtwin-checker.so)
 
 message(STATUS "Idefix final configuration")
 if(Idefix_EVOLVE_VECTOR_POTENTIAL)

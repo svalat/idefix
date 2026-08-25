@@ -18,6 +18,8 @@
 #ifdef WITH_HDF5
 #include "xdmf.hpp"
 #endif
+#include <cstdio>
+#include <twin-checker/CheckerApi.h>
 
 DataBlock::DataBlock(Grid &grid, Input &input) {
   idfx::pushRegion("DataBlock::DataBlock");
@@ -332,6 +334,30 @@ void DataBlock::ShowConfig() {
 
 real DataBlock::ComputeTimestep() {
   // Compute the timestep using all of the enabled modules in the current dataBlock
+  twin_register_site(5000, __FILE__, strlen(__FILE__));
+  twin_register_site(5001, __FILE__, strlen(__FILE__));
+  twin_register_site(5002, __FILE__, strlen(__FILE__));
+  twin_register_site(5003, __FILE__, strlen(__FILE__));
+
+  //TWIN-CHECK
+  //check arrays
+  Kokkos::fence();
+  auto InvDt_tmp = Kokkos::create_mirror_view(hydro->InvDt);
+  Kokkos::deep_copy(InvDt_tmp, hydro->InvDt);
+  Kokkos::fence();
+
+  fprintf(stderr,"(%d,%d,%d) => (%d,%d,%d)\n", beg[KDIR], end[KDIR], beg[JDIR], end[JDIR], beg[IDIR], end[IDIR]);
+  for(auto k = beg[KDIR] ; k < end[KDIR] ; k++) {
+    for(auto j = beg[JDIR] ; j < end[JDIR] ; j++) {
+      for(auto i = beg[IDIR] ; i < end[IDIR] ; i++) {
+	//fprintf(stderr,"(%d,%d,%d) => %g\n", k, j, i, InvDt_tmp(k,j,i));
+        //fflush(stderr);
+        twin_check_double_fixable_ptr(&InvDt_tmp(k,j,i), "InvDt_tmp(k,j,i)", 16, 5000, __LINE__);
+      }
+    }
+  }
+
+  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 5001, __LINE__);
 
   // First with the hydro block
   auto InvDt = hydro->InvDt;
@@ -344,6 +370,11 @@ real DataBlock::ComputeTimestep() {
                   dtmin=FMIN(ONE_F/InvDt(k,j,i),dtmin);
               },
           Kokkos::Min<real>(dt));
+
+  //TWIN-CHECK
+  Kokkos::fence();
+  twin_check_double_fixable_ptr(&dt, "dt=min(hydro)", 13, 5002, __LINE__);
+
   if(haveDust) {
     for(int n = 0 ; n < dust.size() ; n++) {
       real dtDust;
@@ -358,6 +389,10 @@ real DataBlock::ComputeTimestep() {
           Kokkos::Min<real>(dtDust));
       dt = std::min(dt,dtDust);
     }
+
+    //TWIN-CHECK
+    Kokkos::fence();
+    twin_check_double_fixable_ptr(&dt, "dt=min(dust)", 12, 5003, __LINE__);
   }
   Kokkos::fence();
   return(dt);

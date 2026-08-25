@@ -19,6 +19,7 @@
 #ifdef WITH_MPI
 #include "mpi.hpp"
 #endif
+#include <twin-checker/CheckerApi.h>
 
 // Functors being used by RKL
 template <typename Phys>
@@ -646,6 +647,17 @@ void RKLegendre<Phys>::ResetStage() {
              0,data->np_tot[IDIR],
              func);
 
+
+  //TWIN-CHECK
+  twin_register_site(1000, __FILE__, strlen(__FILE__));
+  //check arrays
+  Kokkos::fence();
+  auto InvDt_tmp = Kokkos::create_mirror_view(this->hydro->InvDt);
+  Kokkos::deep_copy(InvDt_tmp, this->hydro->InvDt);
+  Kokkos::fence();
+  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 1000, __LINE__);
+
+
   idfx::popRegion();
 }
 
@@ -665,6 +677,13 @@ void RKLegendre<Phys>::ComputeDt() {
     },
     Kokkos::Max<real>(newinvdt)
   );
+
+  //TWIN-CHECK
+  twin_register_site(1005, __FILE__, strlen(__FILE__));
+  //check arrays
+  Kokkos::fence();
+  twin_check_double_fixable_ptr(&newinvdt, "newinvdt", 8, 1005, __LINE__);
+
 
 #ifdef WITH_MPI
   if(idfx::psize>1) {
@@ -924,6 +943,16 @@ void RKLegendre<Phys>::CalcParabolicRHS(real t) {
                                                         dMax(k,j,i)) / (dl*dl);
       });
   }
+
+  //TWIN-CHECK
+  twin_register_site(1007, __FILE__, strlen(__FILE__));
+  //check arrays
+  Kokkos::fence();
+  auto InvDt_tmp = Kokkos::create_mirror_view(invDt);
+  Kokkos::deep_copy(InvDt_tmp, invDt);
+  Kokkos::fence();
+  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 1007, __LINE__);
+
 
   idfx::popRegion();
 }

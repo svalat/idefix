@@ -22,12 +22,36 @@
 #include "hllDust.hpp"
 
 #include "shockFlattening.hpp"
+#include "tw.hpp"
+//#include <twin-checker/CheckerApi.h>
+
+/*#define TWTOSTR(var) (#var)
+#define TWCHECK(var) \
+  do { \
+    twin_register_site((55555+__LINE__), __FILE__, strlen(__FILE__)); \
+    Kokkos::fence(); \
+    auto tmp = Kokkos::create_mirror_view(var); \
+    Kokkos::deep_copy(tmp, var); \
+    Kokkos::fence(); \
+    twin_check_double_fixable_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (55555+__LINE__), __LINE__); \
+  } while(0)
+*/
 
 // Compute Riemann fluxes from states
 template <typename Phys>
 template <int dir>
 void RiemannSolver<Phys>::CalcFlux(IdefixArray4D<real> &flux) {
   idfx::pushRegion("RiemannSolver::CalcFlux");
+
+  TWCHECK(55555,flux);
+  TWCHECK(55555,this->hydro->Uc);
+  TWCHECK(55555,this->Vc);
+  TWCHECK(55555,this->Vs);
+  TWCHECK(55555,this->cMax);
+  TWCHECK(55555,this->data->dx[IDIR]);
+  TWCHECK(55555,this->data->dx[JDIR]);
+  TWCHECK(55555,this->data->dx[KDIR]);
+
   if constexpr(dir == IDIR) {
     // enable shock flattening
     if(haveShockFlattening) shockFlattening->FindShock();
@@ -81,6 +105,15 @@ void RiemannSolver<Phys>::CalcFlux(IdefixArray4D<real> &flux) {
       }
     }// Dust
   }
+
+  TWCHECK(55555,this->data->dx[IDIR]);
+  TWCHECK(55555,this->data->dx[JDIR]);
+  TWCHECK(55555,this->data->dx[KDIR]);
+  TWCHECK(55555,this->Vc);
+  TWCHECK(55555,this->Vs);
+  TWCHECK(55555,this->cMax);
+  TWCHECK(55555,flux);
+
   idfx::popRegion();
 }
 #endif // FLUID_RIEMANNSOLVER_CALCFLUX_HPP_

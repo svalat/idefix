@@ -13,6 +13,7 @@
 #include "extrapolateToFaces.hpp"
 #include "flux.hpp"
 #include "convertConsToPrim.hpp"
+#include "tw.hpp"
 
 // Compute Riemann fluxes from states using TVDLF solver
 template <typename Phys>
@@ -33,6 +34,18 @@ void RiemannSolver<Phys>::TvdlfHD(IdefixArray4D<real> &Flux) {
   IdefixArray1D<real> dx = this->data->dx[DIR];
 
   ExtrapolateToFaces<Phys,DIR> extrapol = *this->GetExtrapolator<DIR>();
+
+  //TWINCHECK
+  IdefixArray4D<real> twFluxL("twFluxL",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> twFluxR("twFluxR",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> twuL("twuL",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> twuR("twuR",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> twvL("twvuL",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> twvR("twvuR",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> tw1("tw1",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> tw2("tw2",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> tw3("tw3",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
+  IdefixArray4D<real> tw4("tw3",data->np_tot[KDIR], data->np_tot[JDIR], data->np_tot[IDIR], Phys::nvar);
 
   idefix_for("TVDLF_Kernel",
              data->beg[KDIR],data->end[KDIR]+koffset,
@@ -84,9 +97,23 @@ void RiemannSolver<Phys>::TvdlfHD(IdefixArray4D<real> &Flux) {
       K_Flux<Phys,DIR>(fluxL, vL, uL, cRL*cRL);
       K_Flux<Phys,DIR>(fluxR, vR, uR, cRL*cRL);
 
+      //tw
+      for(int nv = 0 ; nv < Phys::nvar; nv++) {
+        twuL(k,j,i,nv) = uL[nv];
+        twuR(k,j,i,nv) = uR[nv];
+        twvL(k,j,i,nv) = vL[nv];
+        twvR(k,j,i,nv) = vR[nv];
+        twFluxL(k,j,i,nv) = fluxL[nv];
+        tw1(k,j,i,nv) = fluxL[nv]+fluxR[nv];
+        tw2(k,j,i,nv) = cmax*(uR[nv]-uL[nv]);
+        tw3(k,j,i,nv) = (fluxL[nv]+fluxR[nv] - cmax*(uR[nv]-uL[nv]));
+        tw4(k,j,i,nv) = tw1(k,j,i,nv) - tw2(k,j,i,nv);
+      }
+
       // 5-- Compute the flux from the left and right states
 #pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
+        //Flux(nv,k,j,i) = (fluxL[nv]+fluxR[nv] - (uR[nv]-uL[nv]));
         Flux(nv,k,j,i) = HALF_F*(fluxL[nv]+fluxR[nv] - cmax*(uR[nv]-uL[nv]));
       }
 
@@ -94,6 +121,20 @@ void RiemannSolver<Phys>::TvdlfHD(IdefixArray4D<real> &Flux) {
       cMax(k,j,i) = cmax;
     }
   );
+
+  TWCHECK(66666, twuL);
+  TWCHECK(66666, twuR);
+  TWCHECK(66666, twvL);
+  TWCHECK(66666, twvR);
+  TWCHECK(66666, twFluxL);
+  TWCHECK(66666, twFluxR);
+  TWCHECK(66666, cMax);
+  TWCHECK(66666, tw1);
+  TWCHECK(66666, tw2);
+  TWCHECK(66666, tw4);
+  TWCHECK(66666, tw3);
+  TWCHECK(66666, Flux);
+
 
   idfx::popRegion();
 }
