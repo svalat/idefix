@@ -655,7 +655,7 @@ void RKLegendre<Phys>::ResetStage() {
   auto InvDt_tmp = Kokkos::create_mirror_view(this->hydro->InvDt);
   Kokkos::deep_copy(InvDt_tmp, this->hydro->InvDt);
   Kokkos::fence();
-  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 1000, __LINE__);
+  twin_check_double_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 1000, __LINE__);
 
 
   idfx::popRegion();
@@ -951,7 +951,7 @@ void RKLegendre<Phys>::CalcParabolicRHS(real t) {
   auto InvDt_tmp = Kokkos::create_mirror_view(invDt);
   Kokkos::deep_copy(InvDt_tmp, invDt);
   Kokkos::fence();
-  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 1007, __LINE__);
+  twin_check_double_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 1007, __LINE__);
 
 
   idfx::popRegion();

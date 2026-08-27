@@ -352,12 +352,12 @@ real DataBlock::ComputeTimestep() {
       for(auto i = beg[IDIR] ; i < end[IDIR] ; i++) {
 	//fprintf(stderr,"(%d,%d,%d) => %g\n", k, j, i, InvDt_tmp(k,j,i));
         //fflush(stderr);
-        twin_check_double_fixable_ptr(&InvDt_tmp(k,j,i), "InvDt_tmp(k,j,i)", 16, 5000, __LINE__);
+        twin_check_double(InvDt_tmp(k,j,i), "InvDt_tmp(k,j,i)", 16, 5000, __LINE__);
       }
     }
   }
 
-  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 5001, __LINE__);
+  twin_check_double_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 5001, __LINE__);
 
   // First with the hydro block
   auto InvDt = hydro->InvDt;

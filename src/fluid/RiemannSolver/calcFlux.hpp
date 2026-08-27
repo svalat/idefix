@@ -33,7 +33,7 @@
     auto tmp = Kokkos::create_mirror_view(var); \
     Kokkos::deep_copy(tmp, var); \
     Kokkos::fence(); \
-    twin_check_double_fixable_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (55555+__LINE__), __LINE__); \
+    twin_check_double_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (55555+__LINE__), __LINE__); \
   } while(0)
 */
 

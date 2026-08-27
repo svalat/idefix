@@ -38,6 +38,7 @@ include_guard(GLOBAL)
 function(_fma_suppression_flags_cxx out_var)
     set(flags "")
     set(id "${CMAKE_CXX_COMPILER_ID}")
+    message(STATUS "----------------${CMAKE_CXX_COMPILER_ID}")
 
     # Kokkos backend takes priority: nvcc_wrapper/hipcc hide the real
     # device compiler from CMAKE_CXX_COMPILER_ID.
@@ -50,7 +51,7 @@ function(_fma_suppression_flags_cxx out_var)
     elseif(id STREQUAL "GNU")
         set(flags "-ffp-contract=off" "-mno-fma")
 
-    elseif(id MATCHES "^(Clang|AppleClang)$")
+    elseif(id MATCHES "^(Clang|CrayClang|AppleClang)$")
         set(flags "-ffp-contract=off")
 
     elseif(id STREQUAL "Intel")

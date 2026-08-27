@@ -12,6 +12,8 @@
     Kokkos::deep_copy(tmp, var); \
     Kokkos::fence(); \
     twin_check_double_fixable_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (fid+__LINE__), __LINE__); \
+    Kokkos::deep_copy(var, tmp); \
+    Kokkos::fence(); \
   } while(0)
 
 

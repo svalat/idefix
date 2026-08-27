@@ -135,7 +135,7 @@ void Fluid<Phys>::ResetStage() {
   auto InvDt_tmp = Kokkos::create_mirror_view(this->InvDt);
   Kokkos::deep_copy(InvDt_tmp, this->InvDt);
   Kokkos::fence();
-  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 2000, __LINE__);
+  twin_check_double_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 5, 2000, __LINE__);
 
 
   idfx::popRegion();

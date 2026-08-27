@@ -23,7 +23,7 @@
     auto tmp = Kokkos::create_mirror_view(var); \
     Kokkos::deep_copy(tmp, var); \
     Kokkos::fence(); \
-    twin_check_double_fixable_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (5555+__LINE__), __LINE__); \
+    twin_check_double_array(tmp.data(), tmp.span(), TWTOSTR(var), strlen(TWTOSTR(var)), (5555+__LINE__), __LINE__); \
   } while(0)
 
 */
@@ -634,9 +634,9 @@ void Fluid<Phys>::CalcRightHandSide(real t, real dt) {
   Kokkos::deep_copy(cMax_tmp, this->cMax);
   Kokkos::deep_copy(dMax_tmp, this->dMax);
   Kokkos::fence();
-  twin_check_double_fixable_array(cMax_tmp.data(), cMax_tmp.span(), "cMax", 4, 1101, __LINE__);
-  twin_check_double_fixable_array(dMax_tmp.data(), dMax_tmp.span(), "dMax", 4, 1102, __LINE__);
-  twin_check_double_fixable_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 4, 1100, __LINE__);
+  twin_check_double_array(cMax_tmp.data(), cMax_tmp.span(), "cMax", 4, 1101, __LINE__);
+  twin_check_double_array(dMax_tmp.data(), dMax_tmp.span(), "dMax", 4, 1102, __LINE__);
+  twin_check_double_array(InvDt_tmp.data(), InvDt_tmp.span(), "InvDt", 4, 1100, __LINE__);
 
 
 
