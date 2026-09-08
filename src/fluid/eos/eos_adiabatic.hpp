@@ -28,7 +28,8 @@ class EquationOfState {
   }
 
   // First adiabatic exponent. In the ideal EOS, gamma and mu do not depend on the gas state,
-  // So we add default values to 0 here so that GetGamma and GetMu can be called without any argument
+  // So we add default values to 0 here so that GetGamma and GetMu can be called without any
+  // argument
   KOKKOS_INLINE_FUNCTION real GetGamma(real P = 0.0, real rho = 0.0) const {return gamma;}
   KOKKOS_INLINE_FUNCTION real GetMu(real P = 0.0, real rho = 0.0) const {return mu;}
   void Refresh(DataBlock &, real) {}  // Refresh the eos (recompute coefficients and tables)
