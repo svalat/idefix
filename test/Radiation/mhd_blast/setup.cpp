@@ -3,7 +3,6 @@
 
 
 real T0Glob;
-real muGlob;
 real rho0Glob;
 real wGlob;
 real prsinGlob;
@@ -19,7 +18,6 @@ Setup::Setup(Input &input, Grid &grid, DataBlock &data, Output &output)
   T0Glob = input.Get<real>("Setup","T0",0);
   wGlob = input.Get<real>("Setup","w",0);
   rho0Glob = input.Get<real>("Setup","rho0",0);
-  muGlob = input.Get<real>("Hydro","mu",0);
   prsoutGlob = input.Get<real>("Setup","prs_out",0);
   prsinGlob = input.Get<real>("Setup","prs_in",0);
   B0Glob = input.Get<real>("Setup","B0",0);
@@ -35,7 +33,6 @@ Setup::Setup(Input &input, Grid &grid, DataBlock &data, Output &output)
 void Setup::InitFlow(DataBlock &data) {
     // Create a host copy
     DataBlockHost d(data);
-    real mu = muGlob;
     real T0 = T0Glob;
     real rho0 = rho0Glob;
     real w = wGlob;
@@ -80,25 +77,4 @@ void Setup::InitFlow(DataBlock &data) {
 
     // Send it all, if needed
     d.SyncToDevice();
-}
-
-
-// Compute user variables which will be written in vtk files
-void ComputeUserVars(DataBlock & data, UserDefVariablesContainer &variables) {
-  // Mirror data on Host
-  DataBlockHost d(data);
-
-  // Sync it
-  d.SyncFromDevice();
-
-  // Make references to the user-defined arrays (variables is a container of IdefixHostArray3D)
-  // Note that the labels should match the variable names in the input file
-
-  for(int k = 0; k < d.np_tot[KDIR] ; k++) {
-    for(int j = 0; j < d.np_tot[JDIR] ; j++) {
-      for(int i = 0; i < d.np_tot[IDIR] ; i++) {
-
-      }
-    }
-  }
 }

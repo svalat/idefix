@@ -65,7 +65,6 @@ class RadSource {
   IdefixArray3D<real> InvDt;  // The InvDt of current radiation multigroup
 
   // Data related to current instance of the Rad object
-  std::string prefix;
   int instanceNumber;
 
   // Compute limiting diffusion speed for Riemann solver in opt. thick media
@@ -196,7 +195,7 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
   idfx::pushRegion("RadSource::RadSource");
 
   // Create our own prefix
-  prefix = std::string(Phys::prefix);
+  std::string prefix = std::string(Phys::prefix);
 
   // Save the parent hydro object
   this->data = hydroin->data;
