@@ -310,10 +310,22 @@ Fluid<Phys>::Fluid(Grid &grid, Input &input, DataBlock *datain, int n) {
   // When dealing with radiation, add the frequency group number
   //, reduced speed of light and status of opacities
   if(Phys::prefix.compare("Rad") == 0) {
+    //non supported case.
+    if (n > 1) {
+      IDEFIX_ERROR("Using more than one fluid isn't yet supported with Rad module enabled.")
+    }
+
+    //enable radiation support
     this->haveRadiation=true;
+
+    //set fluid prefix name
     prefix += std::to_string(n);
+
+    //load reduced_c
     this->reduced_c = input.Get<real>(std::string(Phys::prefix),"reduced_c",0);
     this->reduced_c *= idfx::units.c/idfx::units.GetVelocity();
+
+    //load kappa
     if(input.Get<std::string>(std::string(Phys::prefix),"kappa",0).compare("userfunc") == 0) {
       this->haveUserfuncKappa = true;
       this->kappapArr = IdefixArray3D<real>("kappapArray",data->np_tot[KDIR],
@@ -324,6 +336,7 @@ Fluid<Phys>::Fluid(Grid &grid, Input &input, DataBlock *datain, int n) {
                                           data->np_tot[IDIR]);
     }
 
+    //load userfunc
     if (input.CheckEntry("Rad", "irr")>=0) {
       if(input.Get<std::string>(std::string(Phys::prefix),"irr",0).compare("userfunc") == 0 ) {
         this->haveUserfuncKappairr = true;
@@ -333,6 +346,7 @@ Fluid<Phys>::Fluid(Grid &grid, Input &input, DataBlock *datain, int n) {
       }
     }
 
+    //load xiArray
     if(input.Get<std::string>(std::string(Phys::prefix),"xi",0).compare("userfunc") == 0) {
       this->haveUserfuncXi = true;
       this->xiArr = IdefixArray3D<real>("xiArray",data->np_tot[KDIR],
@@ -340,6 +354,7 @@ Fluid<Phys>::Fluid(Grid &grid, Input &input, DataBlock *datain, int n) {
                                           data->np_tot[IDIR]);
     }
 
+    //load irrArray
     if (input.CheckEntry("Rad", "irr")>=0) {
       if(input.Get<std::string>(std::string(Phys::prefix),"irr",0).compare("usergeometry") == 0 ) {
         this->haveUserfuncIrrGeometry = true;
