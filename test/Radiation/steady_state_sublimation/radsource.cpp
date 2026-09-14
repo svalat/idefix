@@ -32,7 +32,7 @@ void RadSource::RelativistCorrection(const real dt) {
   EquationOfState eos = this->eos;
 
   // Local copy of opacity parameters
-  const Type_opac kappa_type = this->kappa_type;
+  const Opacity kappa_type = this->kappa_type;
   const int kappa_ndim = this->kappa_ndim;
   const int xi_ndim = this->xi_ndim;
 
@@ -40,23 +40,23 @@ void RadSource::RelativistCorrection(const real dt) {
   IdefixArray3D<real> kapparArr;
   IdefixArray3D<real> xiArr;
   real kappap_0,kappar_0,rho_0,T_0,xi_0;
-  if (kappa_type == Type_opac::constant) {
+  if (kappa_type == Opacity::constant) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
-  } else if (kappa_type == Type_opac::kramers) {
+  } else if (kappa_type == Opacity::kramers) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
     T_0 = this->T_0;
     rho_0 = this->rho_0;
-  } else if (kappa_type == Type_opac::userfunc) {
+  } else if (kappa_type == Opacity::userfunc) {
     kappapArr = this->kappapArr;
     kapparArr = this->kapparArr;
   }
 
-  const Type_opac xi_type = this->xi_type;
-  if (xi_type == Type_opac::constant) {
+  const Opacity xi_type = this->xi_type;
+  if (xi_type == Opacity::constant) {
     xi_0 = this->xi_0;
-  } else if (xi_type == Type_opac::userfunc) {
+  } else if (xi_type == Opacity::userfunc) {
     xiArr = this->xiArr;
   }
 
@@ -92,13 +92,13 @@ void RadSource::RelativistCorrection(const real dt) {
       real T = VGas[PRS]/(VGas[RHO])*units.GetKelvin()*mu;
 
       // Compute opacities
-      if (kappa_type == Type_opac::constant) {
+      if (kappa_type == Opacity::constant) {
         kappa_p = kappap_0;
         kappa_r = kappar_0;
-      } else if (kappa_type == Type_opac::kramers) {
+      } else if (kappa_type == Opacity::kramers) {
         kappa_p = kappap_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
         kappa_r = kappar_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
-      } else if (kappa_type == Type_opac::usertable) {
+      } else if (kappa_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (kappa_ndim == 1) {
@@ -111,14 +111,14 @@ void RadSource::RelativistCorrection(const real dt) {
           kappa_p = std::pow(10.,kp2D.Get(x));
           kappa_r = std::pow(10.,kr2D.Get(x));
         }
-      } else if (kappa_type == Type_opac::userfunc) {
+      } else if (kappa_type == Opacity::userfunc) {
         kappa_p = kappapArr(k,j,i);
         kappa_r = kapparArr(k,j,i);
       }
 
-      if (xi_type == Type_opac::constant) {
+      if (xi_type == Opacity::constant) {
         xi = xi_0;
-      } else if (xi_type == Type_opac::usertable) {
+      } else if (xi_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (xi_ndim == 1) {
@@ -129,7 +129,7 @@ void RadSource::RelativistCorrection(const real dt) {
           x[0] = logrho;
           xi = std::pow(10.,xi2D.Get(x));
         }
-      } else if (xi_type== Type_opac::userfunc) {
+      } else if (xi_type== Opacity::userfunc) {
         xi = xiArr(k,j,i);
       }
 
@@ -263,7 +263,7 @@ void RadSource::SourceFullImplicit(const real dt) {
 
 
   // Local copy of opacity parameters
-  const Type_opac kappa_type = this->kappa_type;
+  const Opacity kappa_type = this->kappa_type;
   const int kappa_ndim = this->kappa_ndim;
   const int xi_ndim = this->xi_ndim;
 
@@ -271,23 +271,23 @@ void RadSource::SourceFullImplicit(const real dt) {
   IdefixArray3D<real> kapparArr;
   IdefixArray3D<real> xiArr;
   real kappap_0,kappar_0,rho_0,T_0,xi_0;
-  if (kappa_type == Type_opac::constant) {
+  if (kappa_type == Opacity::constant) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
-  } else if (kappa_type == Type_opac::kramers) {
+  } else if (kappa_type == Opacity::kramers) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
     T_0 = this->T_0;
     rho_0 = this->rho_0;
-  } else if (kappa_type == Type_opac::userfunc) {
+  } else if (kappa_type == Opacity::userfunc) {
     kappapArr = this->kappapArr;
     kapparArr = this->kapparArr;
   }
 
-  const Type_opac xi_type = this->xi_type;
-  if (xi_type == Type_opac::constant) {
+  const Opacity xi_type = this->xi_type;
+  if (xi_type == Opacity::constant) {
     xi_0 = this->xi_0;
-  } else if (xi_type == Type_opac::userfunc) {
+  } else if (xi_type == Opacity::userfunc) {
     xiArr = this->xiArr;
   }
 
@@ -340,13 +340,13 @@ void RadSource::SourceFullImplicit(const real dt) {
       real T3 = std::pow(T,3);
 
       // Compute opacities
-      if (kappa_type == Type_opac::constant) {
+      if (kappa_type == Opacity::constant) {
         kappa_p = kappap_0;
         kappa_r = kappar_0;
-      } else if (kappa_type == Type_opac::kramers) {
+      } else if (kappa_type == Opacity::kramers) {
         kappa_p = kappap_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
         kappa_r = kappar_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
-      } else if (kappa_type == Type_opac::usertable) {
+      } else if (kappa_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (kappa_ndim == 1) {
@@ -359,14 +359,14 @@ void RadSource::SourceFullImplicit(const real dt) {
           kappa_p = std::pow(10.,kp2D.Get(x));
           kappa_r = std::pow(10.,kr2D.Get(x));
         }
-      } else if (kappa_type == Type_opac::userfunc) {
+      } else if (kappa_type == Opacity::userfunc) {
         kappa_p = kappapArr(k,j,i);
         kappa_r = kapparArr(k,j,i);
       }
 
-      if (xi_type == Type_opac::constant) {
+      if (xi_type == Opacity::constant) {
         xi = xi_0;
-      } else if (xi_type == Type_opac::usertable) {
+      } else if (xi_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (xi_ndim == 1) {
@@ -377,7 +377,7 @@ void RadSource::SourceFullImplicit(const real dt) {
           x[0] = logrho;
           xi = std::pow(10.,xi2D.Get(x));
         }
-      } else if (xi_type== Type_opac::userfunc) {
+      } else if (xi_type== Opacity::userfunc) {
         xi = xiArr(k,j,i);
       }
 
@@ -495,7 +495,7 @@ void RadSource::SourceFixedPointRad(const real dt) {
   }
 
   // Local copy of opacity parameters
-  const Type_opac kappa_type = this->kappa_type;
+  const Opacity kappa_type = this->kappa_type;
   const int kappa_ndim = this->kappa_ndim;
   const int xi_ndim = this->xi_ndim;
 
@@ -503,23 +503,23 @@ void RadSource::SourceFixedPointRad(const real dt) {
   IdefixArray3D<real> kappapArr;
   IdefixArray3D<real> kapparArr;
   IdefixArray3D<real> xiArr;
-  if (kappa_type == Type_opac::constant) {
+  if (kappa_type == Opacity::constant) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
-  } else if (kappa_type == Type_opac::kramers) {
+  } else if (kappa_type == Opacity::kramers) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
     T_0 = this->T_0;
     rho_0 = this->rho_0;
-  } else if (kappa_type == Type_opac::userfunc) {
+  } else if (kappa_type == Opacity::userfunc) {
     kappapArr = this->kappapArr;
     kapparArr = this->kapparArr;
   }
 
-  const Type_opac xi_type = this->xi_type;
-  if (xi_type == Type_opac::constant) {
+  const Opacity xi_type = this->xi_type;
+  if (xi_type == Opacity::constant) {
     xi_0 = this->xi_0;
-  } else if (xi_type == Type_opac::userfunc) {
+  } else if (xi_type == Opacity::userfunc) {
     xiArr = this->xiArr;
   }
 
@@ -577,13 +577,13 @@ void RadSource::SourceFixedPointRad(const real dt) {
       real T = VGas[PRS]/(VGas[RHO])*units.GetKelvin()*mu;
 
       // Assume kappa and xi are constant during iteration (to check)
-      if (kappa_type == Type_opac::constant) {
+      if (kappa_type == Opacity::constant) {
         kappa_p = kappap_0;
         kappa_r = kappar_0;
-      } else if (kappa_type == Type_opac::kramers) {
+      } else if (kappa_type == Opacity::kramers) {
         kappa_p = kappap_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
         kappa_r = kappar_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
-      } else if (kappa_type == Type_opac::usertable) {
+      } else if (kappa_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (kappa_ndim == 1) {
@@ -596,14 +596,14 @@ void RadSource::SourceFixedPointRad(const real dt) {
           kappa_p = std::pow(10.,kp2D.Get(x));
           kappa_r = std::pow(10.,kr2D.Get(x));
         }
-      } else if (kappa_type == Type_opac::userfunc) {
+      } else if (kappa_type == Opacity::userfunc) {
         kappa_p = kappapArr(k,j,i);
         kappa_r = kapparArr(k,j,i);
       }
 
-      if (xi_type == Type_opac::constant) {
+      if (xi_type == Opacity::constant) {
         xi = xi_0;
-      } else if (xi_type == Type_opac::usertable) {
+      } else if (xi_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (xi_ndim == 1) {
@@ -614,7 +614,7 @@ void RadSource::SourceFixedPointRad(const real dt) {
           x[0] = logrho;
           xi = std::pow(10.,xi2D.Get(x));
         }
-      } else if (xi_type== Type_opac::userfunc) {
+      } else if (xi_type== Opacity::userfunc) {
         xi = xiArr(k,j,i);
       }
 
@@ -709,7 +709,7 @@ void RadSource::SourceFixedPointGas(const real dt) {
   EquationOfState eos = this->eos;
 
   // Local copy of opacity parameters
-  const Type_opac kappa_type = this->kappa_type;
+  const Opacity kappa_type = this->kappa_type;
   const int kappa_ndim = this->kappa_ndim;
   const int xi_ndim = this->xi_ndim;
 
@@ -717,23 +717,23 @@ void RadSource::SourceFixedPointGas(const real dt) {
   IdefixArray3D<real> kappapArr;
   IdefixArray3D<real> kapparArr;
   IdefixArray3D<real> xiArr;
-  if (kappa_type == Type_opac::constant) {
+  if (kappa_type == Opacity::constant) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
-  } else if (kappa_type == Type_opac::kramers) {
+  } else if (kappa_type == Opacity::kramers) {
     kappap_0 = this->kappap_0;
     kappar_0 = this->kappar_0;
     T_0 = this->T_0;
     rho_0 = this->rho_0;
-  } else if (kappa_type == Type_opac::userfunc) {
+  } else if (kappa_type == Opacity::userfunc) {
     kappapArr = this->kappapArr;
     kapparArr = this->kapparArr;
   }
 
-  const Type_opac xi_type = this->xi_type;
-  if (xi_type == Type_opac::constant) {
+  const Opacity xi_type = this->xi_type;
+  if (xi_type == Opacity::constant) {
     xi_0 = this->xi_0;
-  } else if (xi_type == Type_opac::userfunc) {
+  } else if (xi_type == Opacity::userfunc) {
     xiArr = this->xiArr;
   }
 
@@ -786,13 +786,13 @@ void RadSource::SourceFixedPointGas(const real dt) {
       real T = VGas[PRS]/(VGas[RHO])*units.GetKelvin()*mu;
 
       // Compute opacities (out of while loop so that opacity is contant throughout the fixed_point iteration)
-      if (kappa_type == Type_opac::constant) {
+      if (kappa_type == Opacity::constant) {
         kappa_p = kappap_0;
         kappa_r = kappar_0;
-      } else if (kappa_type == Type_opac::kramers) {
+      } else if (kappa_type == Opacity::kramers) {
         kappa_p = kappap_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
         kappa_r = kappar_0*VGas[RHO]*units.GetDensity()/rho_0*std::pow(T/T_0,-3.5);
-      } else if (kappa_type == Type_opac::usertable) {
+      } else if (kappa_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (kappa_ndim == 1) {
@@ -805,14 +805,14 @@ void RadSource::SourceFixedPointGas(const real dt) {
           kappa_p = std::pow(10.,kp2D.Get(x));
           kappa_r = std::pow(10.,kr2D.Get(x));
         }
-      } else if (kappa_type == Type_opac::userfunc) {
+      } else if (kappa_type == Opacity::userfunc) {
         kappa_p = kappapArr(k,j,i);
         kappa_r = kapparArr(k,j,i);
       }
 
-      if (xi_type == Type_opac::constant) {
+      if (xi_type == Opacity::constant) {
         xi = xi_0;
-      } else if (xi_type == Type_opac::usertable) {
+      } else if (xi_type == Opacity::usertable) {
         real logT = std::log10(T);
         real logrho = std::log10(VGas[RHO]*units.GetDensity());
         if (xi_ndim == 1) {
@@ -823,7 +823,7 @@ void RadSource::SourceFixedPointGas(const real dt) {
           x[0] = logrho;
           xi = std::pow(10.,xi2D.Get(x));
         }
-      } else if (xi_type== Type_opac::userfunc) {
+      } else if (xi_type== Opacity::userfunc) {
         xi = xiArr(k,j,i);
       }
 
@@ -895,16 +895,16 @@ void RadSource::ShowConfig() {
 
   idfx::cout << "RadSource: kappa is ";
   switch(kappa_type) {
-    case Type_opac::constant:
+    case Opacity::constant:
       idfx::cout << "constant." << std::endl;
       break;
-    case Type_opac::kramers:
+    case Opacity::kramers:
       idfx::cout << "from kramers' law." << std::endl;
       break;
-    case Type_opac::usertable:
+    case Opacity::usertable:
       idfx::cout << "from a user table." << std::endl;
       break;
-    case Type_opac::userfunc:
+    case Opacity::userfunc:
       idfx::cout << "from a user-defined function."
                      << std::endl;
       if(!data->radiation[0]->kappaFunc) {
@@ -914,16 +914,16 @@ void RadSource::ShowConfig() {
   }
   idfx::cout << "RadSource: xi is ";
   switch(xi_type) {
-    case Type_opac::constant:
+    case Opacity::constant:
       idfx::cout << "constant." << std::endl;
       break;
-    case Type_opac::kramers:
+    case Opacity::kramers:
       idfx::cout << "!!! from kramers' law, which is not allowed !!!" << std::endl;
       break;
-    case Type_opac::usertable:
+    case Opacity::usertable:
       idfx::cout << "from a user table." << std::endl;
       break;
-    case Type_opac::userfunc:
+    case Opacity::userfunc:
       idfx::cout << "from a user-defined function."
                      << std::endl;
       if(!data->radiation[0]->xiFunc) {
@@ -933,13 +933,13 @@ void RadSource::ShowConfig() {
   }
   idfx::cout << "Source term solver is ";
   switch(source_solver) {
-    case Type_isolver::full_implicit:
+    case ImplicitSolver::full_implicit:
       idfx::cout << "full_implicit." << std::endl;
       break;
-    case Type_isolver::fixed_point_rad:
+    case ImplicitSolver::fixed_point_rad:
       idfx::cout << "fixed_point_rad." << std::endl;
       break;
-    case Type_isolver::fixed_point_gas:
+    case ImplicitSolver::fixed_point_gas:
       idfx::cout << "fixed_point_gas (to test)." << std::endl;
       break;
   }
@@ -956,13 +956,13 @@ void RadSource::AddRadSource(const real dt) {
   if(haveRelativistCorrection) RadSource::RelativistCorrection(dt);
 
   switch(source_solver) {
-    case Type_isolver::full_implicit:
+    case ImplicitSolver::full_implicit:
       RadSource::SourceFullImplicit(dt);
       break;
-    case Type_isolver::fixed_point_rad:
+    case ImplicitSolver::fixed_point_rad:
       RadSource::SourceFixedPointRad(dt);
       break;
-    case Type_isolver::fixed_point_gas:
+    case ImplicitSolver::fixed_point_gas:
       RadSource::SourceFixedPointGas(dt);
       break;
   }
