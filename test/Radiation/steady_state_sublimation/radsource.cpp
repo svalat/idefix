@@ -990,13 +990,13 @@ void RadSource::IrrFlux(IdefixArray3D<real> divFin) {
 
   real flux_pre = std::pow(rs/units.GetLength(),2.)*units.sigma_sb*std::pow(Ts,4.)/units.GetLength();
 
-  if (irr_type==Type_irr::constant){
+  if (irr_type==IradiationFlux::constant){
     column_rho->ComputeColumn(this->VcGas,RHO);
     tau = column_rho->GetColumn();
-  } else if (irr_type==Type_irr::usertable){
+  } else if (irr_type==IradiationFlux::usertable){
     column_rho->ComputeColumn(this->VcGas,RHO);
     tau = column_rho->GetColumn();
-  } else if (irr_type==Type_irr::userfunc){
+  } else if (irr_type==IradiationFlux::userfunc){
     idefix_for("RadSourceInitKapparho",
     data->beg[KDIR], data->end[KDIR],
     data->beg[JDIR], data->end[JDIR],
@@ -1017,20 +1017,20 @@ void RadSource::IrrFlux(IdefixArray3D<real> divFin) {
               real Fip,Fim;
 
               // Constant kappa
-              if(irr_type==Type_irr::constant) {
+              if(irr_type==IradiationFlux::constant) {
                 real kirr = kappa_irr*units.GetDensity()*units.GetLength();
                 Fim = std::exp(-kirr*tau(k,j,i-1))*A1(k,j,i)/std::pow(x1l(i),2.);
                 Fip = std::exp(-kirr*tau(k,j,i))*A1(k,j,i+1)/std::pow(x1l(i+1),2.);
 
               // Usertable kappa
-              } else if (irr_type==Type_irr::usertable) {
+              } else if (irr_type==IradiationFlux::usertable) {
                 real logtaum = std::log10(FMAX(tau(k,j,i-1)*units.GetDensity()*units.GetLength(),1.e-15));
                 Fim = pow(10.,irr1D.Get(&logtaum))*A1(k,j,i)/std::pow(x1l(i),2.);
                 real logtaup = std::log10(FMAX(tau(k,j,i)*units.GetDensity()*units.GetLength(),1.e-15));
                 Fip = pow(10.,irr1D.Get(&logtaup))*A1(k,j,i+1)/std::pow(x1l(i+1),2.);
 
               // Userfunc kappa
-              } else if (irr_type==Type_irr::userfunc){
+              } else if (irr_type==IradiationFlux::userfunc){
                 Fim = std::exp(-tau(k,j,i-1))*A1(k,j,i)/std::pow(x1l(i),2.);
                 Fip = std::exp(-tau(k,j,i))*A1(k,j,i+1)/std::pow(x1l(i+1),2.);
               }
@@ -1057,6 +1057,8 @@ void RadSource::IrrFlux(IdefixArray3D<real> divFin) {
   IdefixArray3D<real> eta1 = this->data->hydro->viscosity->eta1Arr;
   IdefixArray3D<real> eta2 = this->data->hydro->viscosity->eta2Arr;
   this->data->hydro->viscosity->viscousDiffusivityFunc(*(this->data), this->data->t, eta1, eta2);
+
+  IdefixArray3D<real> Qvisc = this->Qvisc;
 
   idefix_for("RadSourceQvisc",
   data->beg[KDIR], data->end[KDIR],
