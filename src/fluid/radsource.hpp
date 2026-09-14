@@ -19,11 +19,11 @@
 class RadSource {
  public:
   // Type of opacity
-  enum class Type_opac{constant,kramers,usertable,userfunc};
+  enum class Opacity{constant,kramers,usertable,userfunc};
   // Type of irradiation flux
-  enum class Type_irr{constant,usertable,userfunc,usergeometry};
+  enum class IradiationFlux{constant,usertable,userfunc,usergeometry};
   // Type of implicit solver for radiation source terms
-  enum class Type_isolver{full_implicit,fixed_point_rad,fixed_point_gas};
+  enum class ImplicitSolver{full_implicit,fixed_point_rad,fixed_point_gas};
 
   // RadSource constructor
   template <typename Phys>
@@ -74,13 +74,13 @@ class RadSource {
     real kappa,xi;
     real mu = eos.GetMu(VcGas(PRS,k,j,i),VcGas(RHO,k,j,i));
 
-    if (kappa_type == Type_opac::constant) {
+    if (kappa_type == Opacity::constant) {
       kappa = this->kappar_0;
-    } else if (kappa_type == Type_opac::kramers) {
+    } else if (kappa_type == Opacity::kramers) {
       real T = VcGas(PRS,k,j,i)/(VcGas(RHO,k,j,i))*this->unit_Kelvin*mu;
       kappa = this->kappar_0*VcGas(RHO,k,j,i)*this->unit_density/this->rho_0;
       kappa *= std::pow(T/this->T_0,-3.5);
-    } else if (kappa_type == Type_opac::usertable) {
+    } else if (kappa_type == Opacity::usertable) {
       real T = VcGas(PRS,k,j,i)/(VcGas(RHO,k,j,i))*this->unit_Kelvin*mu;
       real logT = std::log10(T);
       real logrho = std::log10(VcGas(RHO,k,j,i)*this->unit_density);
@@ -92,13 +92,13 @@ class RadSource {
         x[0] = FMIN(-4.05,FMAX(-14.,logrho));
         kappa = std::pow(10.,this->kappa_ross_2D.Get(x));
       }
-    } else if (kappa_type == Type_opac::userfunc) {
+    } else if (kappa_type == Opacity::userfunc) {
       kappa = this->kapparArr(k,j,i);
     }
 
-    if (xi_type == Type_opac::constant) {
+    if (xi_type == Opacity::constant) {
       xi = this->xi_0;
-    } else if (xi_type == Type_opac::usertable) {
+    } else if (xi_type == Opacity::usertable) {
       real T = VcGas(PRS,k,j,i)/(VcGas(RHO,k,j,i))*this->unit_Kelvin*mu;
       real logT = std::log10(T);
       real logrho = std::log10(VcGas(RHO,k,j,i)*this->unit_density);
@@ -110,7 +110,7 @@ class RadSource {
         x[0] = logrho;
         xi = std::pow(10.,this->xi_2D.Get(x));
       }
-    } else if (xi_type == Type_opac::userfunc) {
+    } else if (xi_type == Opacity::userfunc) {
       xi = this->xiArr(k,j,i);
     }
 
@@ -171,10 +171,10 @@ class RadSource {
   IdefixArray3D<real> divF;  // Divergence of irradiation flux
   IdefixArray3D<real> Qvisc;  // Viscous heating
 
-  Type_isolver source_solver;    // Type of implicit solver for radiation source terms
-  Type_opac kappa_type;          // Type of absorption opacity definition
-  Type_opac xi_type;             // Type of scattering opacity definition
-  Type_irr irr_type;             // Type of irradiation flux definition
+  ImplicitSolver source_solver;    // Type of implicit solver for radiation source terms
+  Opacity kappa_type;          // Type of absorption opacity definition
+  Opacity xi_type;             // Type of scattering opacity definition
+  IradiationFlux irr_type;             // Type of irradiation flux definition
 
   //Units
   real unit_density = idfx::units.GetDensity();
@@ -218,10 +218,10 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
 
     std::string xiType = input.Get<std::string>(BlockName,"xi",0);
     if(xiType.compare("constant") == 0) {
-      this->xi_type = Type_opac::constant;
+      this->xi_type = Opacity::constant;
       this->xi_0 = input.Get<real>(BlockName,"xi",n+1);
     } else if(xiType.compare("usertable") == 0) {
-      this->xi_type = Type_opac::usertable;
+      this->xi_type = Opacity::usertable;
       this->xi_ndim = input.Get<int>(BlockName,"xi",n+1);
       std::string xi_file = input.Get<std::string>(BlockName,"xi",n+2);
       if (this->xi_ndim == 1) {
@@ -235,7 +235,7 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
         IDEFIX_ERROR(msg);
       }
     } else if (xiType.compare("userfunc") == 0) {
-      this->xi_type = Type_opac::userfunc;
+      this->xi_type = Opacity::userfunc;
       this->xiArr = hydroin->xiArr;
     } else {
       std::stringstream msg;
@@ -256,19 +256,19 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
 
     std::string kappaType = input.Get<std::string>(BlockName,"kappa",0);
     if(kappaType.compare("constant") == 0) {
-      this->kappa_type = Type_opac::constant;
+      this->kappa_type = Opacity::constant;
       this->kappap_0 = input.Get<real>(BlockName,"kappa",n+1);
       this->kappar_0 = input.Get<real>(BlockName,"kappa",n+2);
     } else if(kappaType.compare("kramers") == 0) {
       this->kappap_0 = input.Get<real>(BlockName,"kappa",n+1);
       this->kappar_0 = input.Get<real>(BlockName,"kappa",n+2);
-      this->kappa_type = Type_opac::kramers;
+      this->kappa_type = Opacity::kramers;
       this->rho_0 = input.Get<real>(BlockName,"kappa",n+3);
       this->T_0 = input.Get<real>(BlockName,"kappa",n+4);
       this->kappap_es = input.Get<real>(BlockName,"kappa",n+5);
       this->kappar_es = input.Get<real>(BlockName,"kappa",n+6);
     } else if(kappaType.compare("usertable") == 0) {
-      this->kappa_type = Type_opac::usertable;
+      this->kappa_type = Opacity::usertable;
       this->kappa_ndim = input.Get<int>(BlockName,"kappa",n+1);
       std::string kappap_file = input.Get<std::string>(BlockName,"kappa",n+2);
       std::string kappar_file = input.Get<std::string>(BlockName,"kappa",n+3);
@@ -285,7 +285,7 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
         IDEFIX_ERROR(msg);
       }
     } else if (kappaType.compare("userfunc") == 0) {
-      this->kappa_type = Type_opac::userfunc;
+      this->kappa_type = Opacity::userfunc;
       this->kappapArr = hydroin->kappapArr;
       this->kapparArr = hydroin->kapparArr;
     } else {
@@ -308,11 +308,11 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
 
     std::string sourceType = input.Get<std::string>(BlockName,"source",0);
     if(sourceType.compare("full_implicit") == 0) {
-      this->source_solver = Type_isolver::full_implicit;
+      this->source_solver = ImplicitSolver::full_implicit;
     } else if(sourceType.compare("fixed_point_rad") == 0) {
-      this->source_solver = Type_isolver::fixed_point_rad;
+      this->source_solver = ImplicitSolver::fixed_point_rad;
     } else if(sourceType.compare("fixed_point_gas") == 0) {
-      this->source_solver = Type_isolver::fixed_point_gas;
+      this->source_solver = ImplicitSolver::fixed_point_gas;
     } else {
       std::stringstream msg;
       msg << "Unknown solver for source terms \"" <<  sourceType
@@ -346,12 +346,12 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
     std::string irrType = input.Get<std::string>(BlockName,"irr",0);
 
     if(irrType.compare("constant") == 0) {
-      this->irr_type = Type_irr::constant;
+      this->irr_type = IradiationFlux::constant;
       this->rs = input.Get<real>(BlockName,"irr",n+1);
       this->Ts = input.Get<real>(BlockName,"irr",n+2);
       this->kappa_irr = input.Get<real>(BlockName,"irr",n+3);
     } else if(irrType.compare("usertable") == 0) {
-      this->irr_type = Type_irr::usertable;
+      this->irr_type = IradiationFlux::usertable;
       this->rs = input.Get<real>(BlockName,"irr",n+1);
       this->Ts = input.Get<real>(BlockName,"irr",n+2);
       this->irr_ndim = input.Get<int>(BlockName,"irr",n+3);
@@ -364,7 +364,7 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
         IDEFIX_ERROR(msg);
       }
     } else if(irrType.compare("userfunc") == 0) {
-      this->irr_type = Type_irr::userfunc;
+      this->irr_type = IradiationFlux::userfunc;
       this->rs = input.Get<real>(BlockName,"irr",n+1);
       this->Ts = input.Get<real>(BlockName,"irr",n+2);
       this->kappa_star = input.Get<real>(BlockName,"irr",n+3);
@@ -373,7 +373,7 @@ RadSource::RadSource(Input &input, Fluid<Phys> *hydroin):
                                                  data->np_tot[IDIR]);
       this->kappairrArr = hydroin->kappairrArr;
     } else if(irrType.compare("usergeometry") == 0) {
-      this->irr_type = Type_irr::usergeometry;
+      this->irr_type = IradiationFlux::usergeometry;
       this->irrArr = hydroin->irrArr;
     } else {
       std::stringstream msg;
