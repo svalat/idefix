@@ -282,7 +282,7 @@ void RiemannSolver<Phys>::HllMHD(IdefixArray4D<real> &Flux) {
 
 
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         fluxL[nv] = uL[nv];
         fluxR[nv] = uR[nv];
@@ -406,7 +406,7 @@ void RiemannSolver<Phys>::HllMHD(IdefixArray4D<real> &Flux) {
       }
 
       if (SLb > 0) {
-#pragma unroll
+//#pragma unroll
         for (int nv = BX1 ; nv < BX1+COMPONENTS; nv++) {
           Flux(nv,k,j,i) = fluxL[nv];
         }
@@ -414,7 +414,7 @@ void RiemannSolver<Phys>::HllMHD(IdefixArray4D<real> &Flux) {
           Flux(ENG,k,j,i) = fluxL[ENG];
         }
       } else if (SRb < 0) {
-#pragma unroll
+//#pragma unroll
         for (int nv = BX1 ; nv < BX1+COMPONENTS; nv++) {
           Flux(nv,k,j,i) = fluxR[nv];
         }
@@ -422,7 +422,7 @@ void RiemannSolver<Phys>::HllMHD(IdefixArray4D<real> &Flux) {
           Flux(ENG,k,j,i) = fluxR[ENG];
         }
       } else {
-#pragma unroll
+//#pragma unroll
         for(int nv = BX1 ; nv < BX1+COMPONENTS; nv++) {
           Flux(nv,k,j,i) = SLb*SRb*uR[nv] - SLb*SRb*uL[nv] + SRb*fluxL[nv] - SLb*fluxR[nv];
           Flux(nv,k,j,i) *= (1.0 / (SRb - SLb));
