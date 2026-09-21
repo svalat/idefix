@@ -17,6 +17,7 @@ option(Idefix_RUNTIME_CHECKS "Enable runtime sanity checks" OFF)
 option(Idefix_WERROR "Treat compiler warnings as errors" OFF)
 option(Idefix_PYTHON "Enable python bindings (requires pybind11)" OFF)
 option(Idefix_SUPPRESS_FMA "Disable FMA (fused multiply-add) contraction/codegen. Useful for code validation across architectures." OFF)
+set(TWIN_CHECKER_ROOT "/home/valats/usr/twin-checker" CACHE PATH "Prefix where twin checker is installed")
 set(Idefix_PROBLEM_DIR "${CMAKE_BINARY_DIR}" CACHE STRING "Problem directory to build for.")
 set(Idefix_CXX_FLAGS "" CACHE STRING "Additional compiler/linker flag")
 set(Idefix_DEFS "definitions.hpp" CACHE FILEPATH "Problem definition header file")
@@ -248,6 +249,7 @@ endif()
 target_include_directories(idefix PUBLIC
                            "${Idefix_PROBLEM_DIR_ABS}"
                            )
+target_include_directories(idefix PUBLIC ${TWIN_CHECKER_ROOT}/include)
 target_include_directories(idefix PUBLIC
                            src/kokkos/core/src
                            src/dataBlock
@@ -273,6 +275,22 @@ target_include_directories(idefix PUBLIC
                            )
 
 target_link_libraries(idefix Kokkos::kokkos)
+target_link_libraries(idefix ${TWIN_CHECKER_ROOT}/lib/libtwin-checker.so)
+
+# Generate header with compiler information (name, flags, path)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/src/compiler_info.h.in
+    ${CMAKE_BINARY_DIR}/build/generated/compiler_info.h
+    @ONLY
+)
+# Make sure the generated header is on the include path
+target_include_directories(idefix PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
+
+# disable FMA if needed
+if(Idefix_SUPPRESS_FMA)
+  message(STATUS "FMA (fused multiply-add) contraction/codegen is disabled")
+  target_suppress_fma(idefix)
+endif()
 
 # Generate header with compiler information (name, flags, path)
 configure_file(
