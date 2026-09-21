@@ -158,14 +158,14 @@ void Fluid<Phys>::ConvertConsToPrim() {
       real U[Phys::nvar];
       real V[Phys::nvar];
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         U[nv] = Uc(nv,k,j,i);
       }
 
       K_ConsToPrim<Phys>(V,U,&eos);
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv<Phys::nvar; nv++) {
         Vc(nv,k,j,i) = V[nv];
       }
@@ -198,14 +198,14 @@ void Fluid<Phys>::ConvertPrimToCons() {
       real U[Phys::nvar];
       real V[Phys::nvar];
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         V[nv] = Vc(nv,k,j,i);
       }
 
       K_PrimToCons<Phys>(U,V,&eos);
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv<Phys::nvar; nv++) {
         Uc(nv,k,j,i) = U[nv];
       }

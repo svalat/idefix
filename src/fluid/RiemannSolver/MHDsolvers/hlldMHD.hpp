@@ -242,7 +242,7 @@ void RiemannSolver<Phys>::HlldMHD(IdefixArray4D<real> &Flux) {
       K_PrimToCons<Phys>(uR, vR, &eos);
 
       // 3-- Compute the left and right fluxes
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         fluxL[nv] = uL[nv];
         fluxR[nv] = uR[nv];
@@ -264,12 +264,12 @@ void RiemannSolver<Phys>::HlldMHD(IdefixArray4D<real> &Flux) {
 
       // 5-- Compute the flux from the left and right states
       if (sl > 0) {
-#pragma unroll
+//#pragma unroll
         for (int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i) = fluxL[nv];
         }
       } else if (sr < 0) {
-#pragma unroll
+//#pragma unroll
         for (int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i) = fluxR[nv];
         }
@@ -325,7 +325,7 @@ void RiemannSolver<Phys>::HlldMHD(IdefixArray4D<real> &Flux) {
 
         if (revert_to_hllc) {
           scrh = ONE_F/(sr - sl);
-#pragma unroll
+//#pragma unroll
           for(int nv = 0 ; nv < Phys::nvar; nv++) {
             Uhll[nv]  = sr*uR[nv] - sl*uL[nv] + fluxL[nv] - fluxR[nv];
             Uhll[nv] *= scrh;
@@ -386,12 +386,12 @@ void RiemannSolver<Phys>::HlldMHD(IdefixArray4D<real> &Flux) {
     // 3c. Compute flux when S1L > 0 or S1R < 0
 
         if (S1L >= 0.0) {       //  ----  Region L*
-#pragma unroll
+//#pragma unroll
           for(int nv = 0 ; nv < Phys::nvar; nv++) {
             Flux(nv,k,j,i) = fluxL[nv] + sl*(usL[nv] - uL[nv]);
           }
         } else if (S1R <= 0.0) {    //  ----  Region R*
-#pragma unroll
+//#pragma unroll
           for(int nv = 0 ; nv < Phys::nvar; nv++) {
             Flux(nv,k,j,i) = fluxR[nv] + sr*(usR[nv] - uR[nv]);
           }
@@ -443,13 +443,13 @@ void RiemannSolver<Phys>::HlldMHD(IdefixArray4D<real> &Flux) {
 
 
           if (SM >= 0.0) { //  ----  Region L**
-#pragma unroll
+//#pragma unroll
             for(int nv = 0 ; nv < Phys::nvar; nv++) {
               Flux(nv,k,j,i) = fluxL[nv] + S1L*(ussl[nv]  - usL[nv])
                               + sl*(usL[nv] - uL[nv]);
               }
           } else {         //  ----  Region R**
-#pragma unroll
+//#pragma unroll
             for(int nv = 0 ; nv < Phys::nvar; nv++) {
               Flux(nv,k,j,i) = fluxR[nv] + S1R*(ussr[nv]  - usR[nv])
                               + sr*(usR[nv] - uR[nv]);
@@ -489,7 +489,7 @@ void RiemannSolver<Phys>::HlldMHD(IdefixArray4D<real> &Flux) {
 
         if (revert_to_hll) {
           scrh = ONE_F/(sr - sl);
-#pragma unroll
+//#pragma unroll
           for(int nv = 0 ; nv < Phys::nvar; nv++) {
             Flux(nv,k,j,i) = sl*sr*(uR[nv] - uL[nv])
                             + sr*fluxL[nv] - sl*fluxR[nv];

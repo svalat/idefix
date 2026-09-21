@@ -81,7 +81,7 @@ void RiemannSolver<Phys>::RoeHD(IdefixArray4D<real> &Flux) {
 
       // 1-- Store the primitive variables on the left, right, and averaged states
       extrapol.ExtrapolatePrimVar(i, j, k, vL, vR);
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         dv[nv] = vR[nv] - vL[nv];
       }
@@ -162,7 +162,7 @@ void RiemannSolver<Phys>::RoeHD(IdefixArray4D<real> &Flux) {
       a  = std::sqrt(a2);
   #endif // HAVE_ENERGY
 #else
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         um[nv] = HALF_F*(vR[nv]+vL[nv]);
       }
@@ -187,9 +187,9 @@ void RiemannSolver<Phys>::RoeHD(IdefixArray4D<real> &Flux) {
       real lambda[NMODES], alambda[NMODES];
       real eta[NMODES];
 
-#pragma unroll
+//#pragma unroll
       for(int nv1 = 0 ; nv1 < Phys::nvar; nv1++) {
-#pragma unroll
+//#pragma unroll
         for(int nv2 = 0 ; nv2 < Phys::nvar; nv2++) {
           Rc[nv1][nv2] = 0;
         }
@@ -319,7 +319,7 @@ void RiemannSolver<Phys>::RoeHD(IdefixArray4D<real> &Flux) {
         bmin = FMIN(ZERO_F, lambda[0]);
         bmax = FMAX(ZERO_F, lambda[1]);
         scrh1 = ONE_F/(bmax - bmin);
-#pragma unroll
+//#pragma unroll
         for(int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i)  = bmin*bmax*(uR[nv] - uL[nv])
                   +   bmax*fluxL[nv] - bmin*fluxR[nv];
@@ -331,7 +331,7 @@ void RiemannSolver<Phys>::RoeHD(IdefixArray4D<real> &Flux) {
                             compute Roe flux
         ----------------------------------------------------------- */
 
-#pragma unroll
+//#pragma unroll
         for(int nv = 0 ; nv < Phys::nvar; nv++) {
           alambda[nv]  = fabs(lambda[nv]);
         }
@@ -345,10 +345,10 @@ void RiemannSolver<Phys>::RoeHD(IdefixArray4D<real> &Flux) {
           alambda[1] = HALF_F*lambda[1]*lambda[1]/delta + HALF_F*delta;
         }
 
-#pragma unroll
+//#pragma unroll
         for(int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i) = fluxL[nv] + fluxR[nv];
-#pragma unroll
+//#pragma unroll
           for(int nv2 = 0 ; nv2 < Phys::nvar; nv2++) {
             Flux(nv,k,j,i) -= alambda[nv2]*eta[nv2]*Rc[nv][nv2];
           }

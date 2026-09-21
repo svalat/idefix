@@ -95,7 +95,7 @@ void RiemannSolver<Phys>::LFRRad(IdefixArray4D<real> &Flux) {
       K_Flux<Phys,DIR>(fluxR, vR, uR, reduced_c,xiR);
 
       // 5-- Compute the flux from the left and right states
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         Flux(nv,k,j,i) = 0.5*(fluxL[nv] + fluxR[nv]-cmax*(uR[nv]-uL[nv]));
       }

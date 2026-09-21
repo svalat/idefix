@@ -160,7 +160,7 @@ void RiemannSolver<Phys>::TvdlfMHD(IdefixArray4D<real> &Flux) {
       extrapol.ExtrapolatePrimVar(i, j, k, vL, vR);
       vL[BXn] = Vs(DIR,k,j,i);
       vR[BXn] = vL[BXn];
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         v[nv] = HALF_F*(vL[nv] + vR[nv]);
       }
@@ -210,7 +210,7 @@ void RiemannSolver<Phys>::TvdlfMHD(IdefixArray4D<real> &Flux) {
 
 
       // 5-- Compute the flux from the left and right states
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         Flux(nv,k,j,i) = HALF_F*(fluxL[nv] + fluxR[nv] + cmax*(uL[nv] - uR[nv]));
       }

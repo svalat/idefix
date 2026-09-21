@@ -62,7 +62,7 @@ void RiemannSolver<Phys>::TvdlfHD(IdefixArray4D<real> &Flux) {
       // 1-- Read primitive variables
       extrapol.ExtrapolatePrimVar(i, j, k, vL, vR);
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         vRL[nv] = HALF_F*(vL[nv]+vR[nv]);
       }
@@ -86,7 +86,7 @@ void RiemannSolver<Phys>::TvdlfHD(IdefixArray4D<real> &Flux) {
       K_Flux<Phys,DIR>(fluxR, vR, uR, cRL*cRL);
 
       // 5-- Compute the flux from the left and right states
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         Flux(nv,k,j,i) = HALF_F*(fluxL[nv]+fluxR[nv] - cmax*(uR[nv]-uL[nv]));
       }

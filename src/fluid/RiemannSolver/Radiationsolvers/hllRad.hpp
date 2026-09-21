@@ -117,7 +117,7 @@ void RiemannSolver<Phys>::HllRad(IdefixArray4D<real> &Flux) {
         dS = SMALL_NUMBER;
       //printf("Velocities are the same\n");
       }
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         Flux(nv,k,j,i) = SL*SR*uR[nv] - SL*SR*uL[nv] + SR*fluxL[nv] - SL*fluxR[nv];
         Flux(nv,k,j,i) /= dS;

@@ -116,18 +116,18 @@ void RiemannSolver<Phys>::HllcRad(IdefixArray4D<real> &Flux) {
 
       // 5-- Compute the flux from the left and right states
       if (SL >= 0) {
-      #pragma unroll
+      //#pragma unroll
         for (int nv = 0 ; nv < Phys::nvar; nv++) {
            Flux(nv,k,j,i) = fluxL[nv];
         }
       } else if (SR <= 0) {
-      #pragma unroll
+      //#pragma unroll
         for (int nv = 0 ; nv < Phys::nvar; nv++) {
            Flux(nv,k,j,i) = fluxR[nv];
         }
        // switch to LFR solver if speeds are small
 //      } else if (FABS(SL) < SMALL_NUMBER && FABS(SR) < SMALL_NUMBER) {
-//#pragma unroll
+////#pragma unroll
         //for (int nv = 0 ; nv < Phys::nvar; nv++) {
         //  Flux(nv,k,j,i) = 0.5*(fluxL[nv] + fluxR[nv]-cmax*(uR[nv]-uL[nv]));
         //}
@@ -142,7 +142,7 @@ void RiemannSolver<Phys>::HllcRad(IdefixArray4D<real> &Flux) {
 //          dS = SMALL_NUMBER;
 //          std::printf("Velocities are the same\n");
 //        }
-// #pragma unroll
+// //#pragma unroll
 //        for (int nv = 0 ; nv < Phys::nvar; nv++) {
 //          Flux(nv,k,j,i) = SL*SR*uR[nv] - SL*SR*uL[nv] + SR*fluxL[nv] - SL*fluxR[nv];
 //          Flux(nv,k,j,i) /= dS;
@@ -195,7 +195,7 @@ void RiemannSolver<Phys>::HllcRad(IdefixArray4D<real> &Flux) {
         ee = FMAX(ee,1.e-20);
 
         if( (fabs(AL) < ee) && (fabs(AR) < ee) && (fabs(BL) < ee) && (fabs(BR) < ee)) {
-#pragma unroll
+//#pragma unroll
             for(int nv = 0 ; nv < Phys::nvar; nv++) {
                 //std::printf("Switch to HLL solver because of vacuum like int. states at"
                 //"i=%i, j=%i, k=%i and DIR=%i, AL=%e, AR=%e,"
@@ -237,7 +237,7 @@ void RiemannSolver<Phys>::HllcRad(IdefixArray4D<real> &Flux) {
             usR[ER] = vR[ER] + reduced_c*(usR[Xn]-vR[Xn])/SR;
 
             if (us >= 0.0) {
-#pragma unroll
+//#pragma unroll
               for(int nv = 0 ; nv < Phys::nvar; nv++) {
                   Flux(nv,k,j,i) = fluxL[nv] + SL*(usL[nv] - uL[nv]);
                   if (std::isnan(Flux(nv,k,j,i))) {
@@ -246,7 +246,7 @@ void RiemannSolver<Phys>::HllcRad(IdefixArray4D<real> &Flux) {
                   }
               }
             } else {
-#pragma unroll
+//#pragma unroll
               for(int nv = 0 ; nv < Phys::nvar; nv++) {
                   Flux(nv,k,j,i) = fluxR[nv] + SR*(usR[nv] - uR[nv]);
                   if (std::isnan(Flux(nv,k,j,i))) {

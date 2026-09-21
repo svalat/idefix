@@ -91,17 +91,17 @@ void RiemannSolver<Phys>::HllHD(IdefixArray4D<real> &Flux) {
 
       // 5-- Compute the flux from the left and right states
       if (SL > 0) {
-#pragma unroll
+//#pragma unroll
         for (int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i) = fluxL[nv];
         }
       } else if (SR < 0) {
-#pragma unroll
+//#pragma unroll
         for (int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i) = fluxR[nv];
         }
       } else {
-#pragma unroll
+//#pragma unroll
         for(int nv = 0 ; nv < Phys::nvar; nv++) {
           Flux(nv,k,j,i) = SL*SR*uR[nv] - SL*SR*uL[nv] + SR*fluxL[nv] - SL*fluxR[nv];
           Flux(nv,k,j,i) /= (SR - SL);

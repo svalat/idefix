@@ -209,7 +209,7 @@ void RiemannSolver<Phys>::RoeMHD(IdefixArray4D<real> &Flux) {
       vL[BXn] = Vs(DIR,k,j,i);
       vR[BXn] = vL[BXn];
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         dV[nv] = vR[nv] - vL[nv];
       }
@@ -233,7 +233,7 @@ void RiemannSolver<Phys>::RoeMHD(IdefixArray4D<real> &Flux) {
       #endif
 
       // 3-- Compute the left and right fluxes
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
         fluxL[nv] = uL[nv];
         fluxR[nv] = uR[nv];
@@ -243,9 +243,9 @@ void RiemannSolver<Phys>::RoeMHD(IdefixArray4D<real> &Flux) {
       K_Flux<Phys,DIR>(fluxR, vR, fluxR, a2R);
 
       // 5. Set eigenvectors components Rc = 0 initially
-#pragma unroll
+//#pragma unroll
       for(int nv1 = 0 ; nv1 < Phys::nvar; nv1++) {
-#pragma unroll
+//#pragma unroll
         for(int nv2 = 0 ; nv2 < Phys::nvar; nv2++) {
           Rc[nv1][nv2] = 0;
         }
@@ -600,7 +600,7 @@ void RiemannSolver<Phys>::RoeMHD(IdefixArray4D<real> &Flux) {
       sl = lambda[KFASTM];
       sr = lambda[KFASTP];
 
-#pragma unroll
+//#pragma unroll
       for(int nv = 0 ; nv < Phys::nvar; nv++) {
           alambda[nv] = fabs(lambda[nv]);
       }
@@ -623,10 +623,10 @@ void RiemannSolver<Phys>::RoeMHD(IdefixArray4D<real> &Flux) {
 #endif
 
       // 6j. Compute Roe numerical flux
-#pragma unroll
+//#pragma unroll
       for(int nv1 = 0 ; nv1 < Phys::nvar; nv1++) {
         scrh = 0.0;
-#pragma unroll
+//#pragma unroll
         for(int nv2 = 0 ; nv2 < Phys::nvar; nv2++) {
           scrh += alambda[nv2]*eta[nv2]*Rc[nv1][nv2];
         }
