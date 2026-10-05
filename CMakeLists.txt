@@ -105,6 +105,7 @@ endif()
 # add tests
 add_executable(unittests)
 target_link_libraries(unittests GTest::gtest)
+add_test(unittests unittests)
 
 # sub directories should be called after add_executable
 # because the binary target "idefix" should be defined
