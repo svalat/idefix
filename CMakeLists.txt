@@ -71,6 +71,10 @@ include(SetRequiredBuildSettingsForGCC8)
 include(CheckHdf5ParallelSupport)
 include(SuppressFMA)
 
+# enable tests
+enable_testing()
+find_package(GTest REQUIRED)
+
 #Idefix requires Cuda Lambdas (experimental)
 if(Kokkos_ENABLE_CUDA)
   set(Kokkos_ENABLE_CUDA_LAMBDA ON CACHE BOOL "Idefix requires lambdas on Cuda" FORCE)
@@ -98,18 +102,27 @@ if(Idefix_WERROR)
   endif()
 endif()
 
+# add tests
+add_executable(unittests)
+target_link_libraries(unittests GTest::gtest)
+
 # sub directories should be called after add_executable
 # because the binary target "idefix" should be defined
 # before adding source files via "target_sources"
 # create target binary "idefix"
 add_executable(idefix)
+add_library(idefix-core STATIC)
 add_subdirectory(src build)
+
+# link idefix-core where it should
+target_link_libraries(idefix idefix-core)
+target_link_libraries(unittests idefix-core)
 
 # make absolute
 get_filename_component(Idefix_PROBLEM_DIR_ABS ${Idefix_PROBLEM_DIR} ABSOLUTE BASE_DIR ${PROJECT_BINARY_DIR})
 
 if(EXISTS ${Idefix_PROBLEM_DIR_ABS}/setup.cpp)
-  target_sources(idefix PUBLIC ${Idefix_PROBLEM_DIR_ABS}/setup.cpp)
+  target_sources(idefix-core PRIVATE ${Idefix_PROBLEM_DIR_ABS}/setup.cpp)
 else()
   message(WARNING "No specific setup.cpp found in the problem directory (this message can be ignored if using python to define your problem)")
 endif()
@@ -130,7 +143,7 @@ endif()
 if(Idefix_MPI)
   add_compile_definitions("WITH_MPI")
   find_package(MPI REQUIRED)
-  target_link_libraries(idefix MPI::MPI_CXX)
+  target_link_libraries(idefix-core PUBLIC MPI::MPI_CXX)
   add_subdirectory(src/mpi)
 endif()
 
@@ -143,9 +156,9 @@ if(Idefix_HDF5)
   if(Idefix_MPI)
     set(HDF5_PREFER_PARALLEL TRUE)
   endif()
-  target_sources(idefix
-    PUBLIC src/output/xdmf.cpp
-    PUBLIC src/output/xdmf.hpp
+  target_sources(idefix-core
+    PRIVATE src/output/xdmf.cpp
+    PRIVATE src/output/xdmf.hpp
   )
   # Prefer imported targets (matches older working behavior), then fall back.
   find_package(HDF5 QUIET COMPONENTS C)
@@ -160,9 +173,9 @@ if(Idefix_HDF5)
     set(_idefix_hdf5_link_items HDF5::HDF5)
   endif()
 
-  target_link_libraries(idefix ${_idefix_hdf5_link_items})
+  target_link_libraries(idefix-core PUBLIC ${_idefix_hdf5_link_items})
   message(STATUS "Found HDF5 include directories: ${HDF5_INCLUDE_DIRS}")
-  target_include_directories(idefix PUBLIC "${HDF5_INCLUDE_DIRS}")
+  target_include_directories(idefix-core PUBLIC "${HDF5_INCLUDE_DIRS}")
   if(Idefix_MPI)
     CheckHdf5ParallelSupport("${_idefix_hdf5_link_items}")
     if(NOT IDEFIX_HDF5_IS_PARALLEL)
@@ -191,8 +204,8 @@ if(Idefix_PYTHON)
   endif ()
   set(PYBIND11_FINDPYTHON ON CACHE BOOL "Idefix requires python" FORCE)
   find_package(pybind11 REQUIRED)
-  target_link_libraries(idefix pybind11::embed)
-  target_sources(idefix
+  target_link_libraries(idefix-core PUBLIC pybind11::embed)
+  target_sources(idefix-core
     PUBLIC src/pydefix.cpp
     PUBLIC src/pydefix.hpp
   )
@@ -288,10 +301,10 @@ if (${Idefix_MPI_GPU_FORCE_COPY})
   add_compile_definitions("WITH_GPU_FORCE_COPY")
 endif()
 
-target_include_directories(idefix PUBLIC
+target_include_directories(idefix-core PUBLIC
                            "${Idefix_PROBLEM_DIR_ABS}"
                            )
-target_include_directories(idefix PUBLIC
+target_include_directories(idefix-core PUBLIC
                            src/kokkos/core/src
                            src/dataBlock
                            src/dataBlock/planetarySystem
@@ -314,7 +327,7 @@ target_include_directories(idefix PUBLIC
                            src
                            )
 
-target_link_libraries(idefix Kokkos::kokkos)
+target_link_libraries(idefix-core PUBLIC Kokkos::kokkos)
 
 # Generate header with compiler information (name, flags, path)
 configure_file(
@@ -323,12 +336,14 @@ configure_file(
     @ONLY
 )
 # Make sure the generated header is on the include path
-target_include_directories(idefix PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
+target_include_directories(idefix-core PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
+target_include_directories(unittests PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
 
 # disable FMA if needed
 if(Idefix_SUPPRESS_FMA)
   message(STATUS "FMA (fused multiply-add) contraction/codegen is disabled")
   target_suppress_fma(idefix)
+  target_suppress_fma(unitests)
 endif()
 
 message(STATUS "Idefix final configuration")
