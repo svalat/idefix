@@ -312,7 +312,7 @@ Fluid<Phys>::Fluid(Grid &grid, Input &input, DataBlock *datain, int n) {
   if(Phys::prefix.compare("Rad") == 0) {
     //non supported case.
     if (n > 1) {
-      IDEFIX_ERROR("Using more than one fluid isn't yet supported with Rad module enabled.")
+      IDEFIX_ERROR("Using more than one fluid isn't yet supported with Rad module enabled.");
     }
 
     //enable radiation support
