@@ -132,8 +132,6 @@ int main( int argc, char* argv[] )
   {
     idfx::initialize();
 
-    //////////////////////////////////////////////
-
     Banner("Testing 2D CSV file on device.");
     IdefixArray1D<real> arr = IdefixArray1D<real>("Test",1);
     IdefixArray1D<real>::host_mirror_type arrHost = Kokkos::create_mirror_view(arr);
@@ -152,8 +150,6 @@ int main( int argc, char* argv[] )
     CheckClose(arrHost(0), kValue2D, 1e-13, "2D CSV, device");
     Success();
 
-    //////////////////////////////////////////////
-
     Banner("Testing 2D CSV file on Host.");
     real x[2];
     x[0] = 2.1;
@@ -162,8 +158,6 @@ int main( int argc, char* argv[] )
     idfx::cout << "result="<<result << std::endl;
     CheckClose(result, kValue2D, 1e-13, "2D CSV, host");
     Success();
-
-    //////////////////////////////////////////////
 
     Banner("Testing 1D CSV file on device.");
     // Read 1D CSV File
@@ -180,16 +174,12 @@ int main( int argc, char* argv[] )
     CheckEqual(arrHost(0), real(4.2), "1D CSV, device");
     Success();
 
-    //////////////////////////////////////////////
-
     Banner("Testing 1D CSV file on Host.");
     x[0] = 2.1;
     result = csv1D.GetHost(x);
     idfx::cout << "result="<<result << std::endl;
     CheckEqual(result, real(4.2), "1D CSV, host");
     Success();
-
-    //////////////////////////////////////////////
 
     Banner("Testing 1D CSV file read as columns on device.");
     // Read the same 1D table, but stored as columns of the CSV file

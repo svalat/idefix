@@ -12,8 +12,8 @@
 // Licensed under CeCILL 2.1 License, see COPYING for more information
 // ***********************************************************************************
 
-#ifndef UTILS_TESTS_GTEST_IDFX_HPP_
-#define UTILS_TESTS_GTEST_IDFX_HPP_
+#ifndef GTEST_IDFX_HPP_
+#define GTEST_IDFX_HPP_
 
 // includes
 #include <string>
@@ -32,14 +32,39 @@
 #endif //WITH_MPI
 #include "idefix.hpp"
 
-#define DATA_FILE(fname) (get_data_file_path(__FILE__, fname))
+/**
+ * A macro to load a datafile present at data/{fname}, data/ being in the same dir than the sources.
+ * @param fname The file name to append to the SRC_DIR/data path.
+*/
+#define DATA_FILE(fname) (idfx_get_data_file_path(__FILE__, fname))
 
-std::string get_data_file_path(const std::string & sourceFile, const std::string & fname) {
+/**
+ * Compare two C arrays of given size.
+ * @param arr1 First C pointer.
+ * @param arr2 Second C pointer.
+ * @param cnt Number of elements to compare.
+ * @param msg Debugging message to print on error.
+**/
+#define ASSERT_C_ARRAY_EQ(arr1, arr2, cnt, msg) \
+  do { \
+    for (size_t __i__ = 0 ; __i__ < cnt ; __i__++) \
+      ASSERT_EQ(arr1[__i__], arr2[__i__]) << "index=" << __i__ << "\n" << msg; \
+  } while(0)
+
+/**
+ * Get the full path to get access to the data/ directory on same location than the sourceFile.
+ * @param sourceFile Absolute path to the source file to consider.
+ * @param fname Filename to append to SRC_DIR/data/.
+*/
+static std::string idfx_get_data_file_path(
+  const std::string & sourceFile, const std::string & fname) {
   fs::path p(sourceFile);
   return p.parent_path() / "data" / fname;
 }
 
-// configure MPI environnement to setup/tear down
+/**
+ * Configure MPI environnement to setup/tear down
+**/
 class MPIEnvironment : public ::testing::Environment {
  public:
   ~MPIEnvironment() override {}
@@ -63,7 +88,9 @@ class MPIEnvironment : public ::testing::Environment {
   }
 };
 
-// configure MPI environnement to setup/tear down
+/**
+ * configure MPI environnement to setup/tear down
+*/
 class KokkosEnvironment : public ::testing::Environment {
  public:
   ~KokkosEnvironment() override {}
@@ -81,7 +108,9 @@ class KokkosEnvironment : public ::testing::Environment {
   }
 };
 
-// configure MPI environnement to setup/tear down
+/**
+ * configure MPI environnement to setup/tear down
+*/
 class IdefixEnvironment : public ::testing::Environment {
  public:
   ~IdefixEnvironment() override {}
@@ -127,4 +156,4 @@ int main(int argc, char* argv[]) {
   return RUN_ALL_TESTS();
 }
 
-#endif //UTILS_TESTS_GTEST_IDFX_HPP_
+#endif //GTEST_IDFX_HPP_
