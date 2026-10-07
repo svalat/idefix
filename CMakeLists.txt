@@ -31,6 +31,7 @@ option(Idefix_MHD "enable MHD" OFF)
 option(Idefix_MPI "enable Message Passing Interface parallelisation" OFF)
 option(Idefix_HIGH_ORDER_FARGO "Force Fargo to use a PPM reconstruction scheme" OFF)
 option(Idefix_DEBUG "Enable Idefix debug features (makes the code very slow)" OFF)
+option(Idefix_GTEST "Enable building unittests with GoogleTest framework)" OFF)
 option(Idefix_RUNTIME_CHECKS "Enable runtime sanity checks" OFF)
 option(Idefix_WERROR "Treat compiler warnings as errors" OFF)
 option(Idefix_PYTHON "Enable python bindings (requires pybind11)" OFF)
@@ -72,8 +73,26 @@ include(CheckHdf5ParallelSupport)
 include(SuppressFMA)
 
 # enable tests
-enable_testing()
-find_package(GTest REQUIRED)
+if (Idefix_GTEST)
+  # enable supports of "make test"
+  enable_testing()
+
+  # try to use the system one
+  find_package(GTest QUIET)
+
+  # it not, download it internally to the project
+  if (NOT GTest_FOUND)
+    cmake_policy(SET CMP0135 NEW)
+    include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/releases/download/v1.18.0/googletest-1.18.0.tar.gz
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+  endif()
+endif()
 
 #Idefix requires Cuda Lambdas (experimental)
 if(Kokkos_ENABLE_CUDA)
@@ -103,9 +122,11 @@ if(Idefix_WERROR)
 endif()
 
 # add tests
-add_executable(unittests)
-target_link_libraries(unittests GTest::gtest)
-add_test(unittests unittests)
+if (Idefix_GTEST)
+  add_executable(unittests)
+  target_link_libraries(unittests GTest::gtest)
+  add_test(unittests unittests)
+endif()
 
 # sub directories should be called after add_executable
 # because the binary target "idefix" should be defined
@@ -117,7 +138,9 @@ add_subdirectory(src build)
 
 # link idefix-core where it should
 target_link_libraries(idefix idefix-core)
-target_link_libraries(unittests idefix-core)
+if (Idefix_GTEST)
+  target_link_libraries(unittests idefix-core)
+endif()
 
 # make absolute
 get_filename_component(Idefix_PROBLEM_DIR_ABS ${Idefix_PROBLEM_DIR} ABSOLUTE BASE_DIR ${PROJECT_BINARY_DIR})
@@ -338,7 +361,9 @@ configure_file(
 )
 # Make sure the generated header is on the include path
 target_include_directories(idefix-core PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
-target_include_directories(unittests PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
+if (Idefix_GTEST)
+  target_include_directories(unittests PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
+endif()
 
 # disable FMA if needed
 if(Idefix_SUPPRESS_FMA)
