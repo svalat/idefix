@@ -297,6 +297,11 @@ int main( int argc, char* argv[] ) {
     idfx::prof.Show();
   }
 
+  //clear tw arrays handler
+  #ifdef WITH_TWIN_CHECKER
+  gbl_idefix_for_var_registry.clear();
+  #endif //WITH_TWIN_CHECKER
+
   if(returnCode<0) {
     idfx::cout << "Main: Job was interrupted before completion." << std::endl;
   } else if (returnCode>0) {

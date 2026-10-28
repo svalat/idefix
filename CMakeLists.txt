@@ -36,8 +36,10 @@ option(Idefix_WERROR "Treat compiler warnings as errors" OFF)
 option(Idefix_PYTHON "Enable python bindings (requires pybind11)" OFF)
 option(Idefix_MPI_GPU_DIRECT "Enable usage of GPU direct to avoid CPU-GPU copies for MPI messages." ON)
 option(Idefix_MPI_GPU_FORCE_COPY "When GPU_DIRECT is disabled, force using transfers for validation purpose." OFF)
+option(Idefix_TWIN_CHECKER "Enable usage of twin-checker in Idefix." OFF)
 mark_as_advanced(Idefix_MPI_GPU_FORCE_TRANSFERS)
 option(Idefix_SUPPRESS_FMA "Disable FMA (fused multiply-add) contraction/codegen. Useful for code validation across architectures." OFF)
+set(TWIN_CHECKER_ROOT "/home/valats/usr/twin-checker" CACHE PATH "Prefix where twin checker is installed")
 set(Idefix_PROBLEM_DIR "${CMAKE_BINARY_DIR}" CACHE STRING "Problem directory to build for.")
 set(Idefix_CXX_FLAGS "" CACHE STRING "Additional compiler/linker flag")
 set(Idefix_DEFS "definitions.hpp" CACHE FILEPATH "Problem definition header file")
@@ -132,6 +134,13 @@ if(Idefix_MPI)
   find_package(MPI REQUIRED)
   target_link_libraries(idefix MPI::MPI_CXX)
   add_subdirectory(src/mpi)
+endif()
+
+if (Idefix_TWIN_CHECKER)
+  add_compile_definitions("WITH_TWIN_CHECKER")
+  find_package(TwinChecker REQUIRED)
+  include_directories(idefix ${TWINCHECKER_INCLUDE_DIRS})
+  target_link_libraries(idefix ${TWINCHECKER_LIBRARIES})
 endif()
 
 if (Idefix_MPI_GPU_DIRECT)
@@ -291,6 +300,7 @@ endif()
 target_include_directories(idefix PUBLIC
                            "${Idefix_PROBLEM_DIR_ABS}"
                            )
+target_include_directories(idefix PUBLIC ${TWIN_CHECKER_ROOT}/include)
 target_include_directories(idefix PUBLIC
                            src/kokkos/core/src
                            src/dataBlock
@@ -315,6 +325,21 @@ target_include_directories(idefix PUBLIC
                            )
 
 target_link_libraries(idefix Kokkos::kokkos)
+
+# Generate header with compiler information (name, flags, path)
+configure_file(
+    ${CMAKE_SOURCE_DIR}/src/compiler_info.h.in
+    ${CMAKE_BINARY_DIR}/build/generated/compiler_info.h
+    @ONLY
+)
+# Make sure the generated header is on the include path
+target_include_directories(idefix PRIVATE ${CMAKE_BINARY_DIR}/build/generated)
+
+# disable FMA if needed
+if(Idefix_SUPPRESS_FMA)
+  message(STATUS "FMA (fused multiply-add) contraction/codegen is disabled")
+  target_suppress_fma(idefix)
+endif()
 
 # Generate header with compiler information (name, flags, path)
 configure_file(
